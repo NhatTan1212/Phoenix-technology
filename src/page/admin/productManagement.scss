@@ -1,0 +1,62 @@
+.searchPM{
+    align-items: center;
+    display: flex;
+   
+    .ant-input-affix-wrapper{
+      border: 2px solid rgb(202, 202, 202);
+      border-radius: 5px 0 0 5px;
+      
+    }
+    .ant-input-affix-wrapper:hover{
+      border: 2px solid rgb(202, 202, 202);
+      border-radius: 5px 0 0 5px;
+      
+    }
+    .ant-input-group-addon {
+      border-radius: 0px;
+      .ant-input-search-button{
+        border-radius: 0px 5px 5px 0px;
+      }
+      .ant-btn {
+        border: 2px solid #e5101d;
+        width: 60px;
+        height: 44px;
+      }
+      .ant-btn:hover {
+        border: 2px solid #e5101d;
+        width: 60px;
+        height: 44px;
+      }
+ 
+    }
+
+    
+    input{
+      font-size: 16px;
+      height: 32px;
+    }
+    button{
+      // border-radius: 0px;
+      border-radius: 0; 
+      height: 44px;
+      width: 60px;
+      background: #e5101d;
+      border: 2px solid rgb(0, 0, 0);
+      svg{
+        color: white;
+        font-size: 23px;
+        font-weight: bolder;
+      }
+    }
+    button:hover{
+      border-color: white;
+    }
+    color: #000;
+  }
+  .btn-add-prd:hover{
+    border-color: #c8191f !important;
+   color: white !important;
+        }
+        :where(.css-dev-only-do-not-override-17a39f8).ant-btn-primary {
+          background-color: #e5101d !important;
+          }

@@ -1,0 +1,230 @@
+html,body,#root{
+    height: 100%;
+  }
+  .wrapContent {
+    margin-top: 100px;
+    width: 26%;
+    min-width: 495px;
+    height: 500px;
+    border-radius: 10px;
+  }
+  
+  .container {
+    display: flex;
+    justify-content: center;
+    height: 93%;
+    background: #ebebeb;
+    // background-image: url("../../../images/backgroundAcer.png");
+  }
+  
+  .loginForm {
+    // float: right;
+    background: white;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    position: relative;
+    // left: 50%;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    align-items: center;
+    border-radius: 10px;
+    // padding: 20px;
+    h2{
+      margin-top: 50px;
+      margin-bottom: 50px;
+      font-style: italic;
+  
+    }
+  }
+  
+  .input {
+    width: 400px;
+    height: 40px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    padding-left: 10px;
+    font-size: 15px;
+    border: 1px solid gray;
+  }
+  input:-webkit-autofill { 
+    -webkit-box-shadow:200px 200px 100px white inset; 
+    box-shadow:200px 200px 100px white inset; 
+  }
+  
+  .wrap-password {
+    margin-bottom: 10px;
+    
+    position: relative;
+    .input {
+      margin: 0;
+    }
+    .eye-icon {
+      position: absolute;
+      right: 10px;
+      color: #646464;
+      top: 32%;
+    }
+  
+    .eye-icon:hover {
+      color: #4d4d4d;
+      cursor: pointer;
+    }
+    
+  }
+  
+  .btnSignIn {
+    background-color: #d74c51;
+    color: white;
+    width: 408px;
+    height: 40px;
+    margin-bottom: 10px;
+    margin-top: 20px;
+    border-radius: 30px;
+  }
+
+  .wrap-err-mess{
+    display: flex;
+    width: 414px;
+    text-align: start;
+    .err-mess{
+      color: red;
+      margin: 0 0 10px 0;
+    }
+    span {
+      a{
+        color: #328eff;
+        font-style: italic;
+        font-size: 16px;
+        text-decoration: none;
+      }
+    }
+  }
+
+  
+  .divider {
+    width: 408px;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    // align-items: center;
+    .line {
+      background-color: #cfcfcf;
+      height: 1px;
+      width: 45%;
+      margin-top: 12px;
+    }
+    .txt-divider{
+      span{
+        margin: auto 5px;
+  
+      }
+    }
+  }
+  
+  
+  
+  
+  
+  .wrap-sign-in-fb{
+    margin-bottom: 10px;
+    position: relative;
+    .btnSignInFb {
+      background-color: white;
+      font-size: 17px;
+      color: black;
+      width: 408px;
+      height: 35px;
+      border: 1px solid gray;
+      border-radius: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .fb-icon{
+      // position: absolute;
+      // right: 0;
+      margin-right: 20px;
+      color: #0a82ed;
+    }
+  
+  }
+  .wrap-sign-in-gg{
+    margin-bottom: 10px;
+    position: relative;
+    .btnSignInGg {
+      background-color: white;
+      font-size: 17px;
+      color: black;
+      width: 408px;
+      height: 35px;
+      border: 1px solid gray;
+      border-radius: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .gg-icon{
+      // position: absolute;
+      // right: 0;
+      margin-right: 30px;
+      color: #0a82ed;
+    }
+    .txt-signin-gg{
+      margin-right: 10px;
+    }
+  
+  }
+  
+  
+  
+  .img {
+    top: 20%;
+    position: absolute;
+    right: 0;
+    // float: right;
+    width: 400px;
+    height: 400px;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: none;
+      filter: drop-shadow(0 0 5px rgb(103, 103, 103));
+    }
+  }
+  
+  .forgot-pass{
+    width: 416px;
+    a{
+      color: #464646;
+      float: right;
+      text-decoration: none;
+    }
+    a:hover {
+      color: black;
+    }
+    
+  }
+  
+  .labelSignUp{
+    margin-top: 50px;
+    margin-bottom: 30px;
+    label{
+      padding-right: 5px;
+      font-style: italic;
+    }
+    a {
+      padding-left: 5px;
+      font-style: italic;
+      text-decoration: none;
+      color: rgb(50, 142, 255);
+    }
+  }
+  .container{
+    display: block;
+  }
+    

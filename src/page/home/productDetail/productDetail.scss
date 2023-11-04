@@ -1,0 +1,26 @@
+.ant-input-number:hover,.ant-input-number-focused {
+    border: 1px solid #c8191f;
+}
+.ant-input-number-handler{
+background-color: #c8191f;
+}
+
+:where(.css-dev-only-do-not-override-17a39f8).ant-input-number .ant-input-number-handler-wrap .ant-input-number-handler .ant-input-number-handler-up-inner{
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+:where(.css-dev-only-do-not-override-17a39f8).ant-input-number .ant-input-number-handler-down-inner svg {
+    color: #fff;
+    font-size: 10px;
+}
+
+.tb-detail{
+    tr:nth-child(2n + 1) {
+        background: #f4f4f4;
+    }
+    td{
+        padding: 10px;
+    }
+}
