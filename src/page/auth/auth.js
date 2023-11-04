@@ -8,7 +8,7 @@ import { faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { faFacebookF } from '@fortawesome/free-brands-svg-icons';
 // import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import '../../views/font.scss'
+// import '../../views/font.scss'
 
 const Auth = () => {
     const location = useLocation();
