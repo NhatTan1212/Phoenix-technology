@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/demo-banlaptop/static/css/main.569c9367.css",
-    "main.js": "/demo-banlaptop/static/js/main.dcb39cbb.js",
-    "static/js/787.55ca77aa.chunk.js": "/demo-banlaptop/static/js/787.55ca77aa.chunk.js",
-    "index.html": "/demo-banlaptop/index.html",
-    "main.569c9367.css.map": "/demo-banlaptop/static/css/main.569c9367.css.map",
-    "main.dcb39cbb.js.map": "/demo-banlaptop/static/js/main.dcb39cbb.js.map",
-    "787.55ca77aa.chunk.js.map": "/demo-banlaptop/static/js/787.55ca77aa.chunk.js.map"
+    "main.css": "/Phoniex-technology/static/css/main.569c9367.css",
+    "main.js": "/Phoniex-technology/static/js/main.621a23ff.js",
+    "static/js/787.55ca77aa.chunk.js": "/Phoniex-technology/static/js/787.55ca77aa.chunk.js",
+    "index.html": "/Phoniex-technology/index.html",
+    "main.569c9367.css.map": "/Phoniex-technology/static/css/main.569c9367.css.map",
+    "main.621a23ff.js.map": "/Phoniex-technology/static/js/main.621a23ff.js.map",
+    "787.55ca77aa.chunk.js.map": "/Phoniex-technology/static/js/787.55ca77aa.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.569c9367.css",
-    "static/js/main.dcb39cbb.js"
+    "static/js/main.621a23ff.js"
   ]
 }
