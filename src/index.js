@@ -9,7 +9,7 @@ import Provider from './store/Provider';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Router>
+    <Router basename={process.env.PUBLIC_URL}>
       <Provider>
         <App />
       </Provider>

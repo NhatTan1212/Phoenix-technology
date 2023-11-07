@@ -54,39 +54,37 @@ function AppRoutes() {
 
     return (
         <>
-            <Router basename={process.env.PUBLIC_URL}>
-                <Routes>
-                    {/*---Home---*/}
-                    <Route path="" element={<><Home /></>} />
-                    <Route path="/product-detail/:id" element={<><ProductDetail /></>} />
-                    <Route path="/password/reset" element={<ResetPassword />} />
-                    <Route path="/password/update/:email" element={<UpdatePassword />} />
-                    <Route path="/auth" element={<><Auth /></>} />
-                    <Route path="/auth/signup" element={<><SignUp /></>} />
-                    <Route path="/auth/confirm" element={<><Confirm /></>} />
-                    <Route path="/cart" element={<><Cart /></>} />
-                    <Route path="/order" element={<><Order /></>} />
-                    <Route path="/order-detail/:id" element={<><OrderDetail /></>} />
-                    {/*---Management---*/}
-                    {isAdmin ?
-                        <>
-                            <Route path="/management" element={<><AdminHome /></>} />
-                            <Route path="/management/user" element={<><AdminHome /></>} />
-                            <Route path="/management/category" element={<><AdminHome /></>} />
-                            <Route path="/management/product" element={<><ProductManagement /></>} />
-                            <Route path="/management/order" element={<><OrderManagement /></>} />
-                        </> :
-                        <>
-                            <Route path="/management" element={<AccessDeniedMessage />} />
-                            <Route path="/management/user" element={<AccessDeniedMessage />} />
-                            <Route path="/management/category" element={<AccessDeniedMessage />} />
-                            <Route path="/management/product" element={<AccessDeniedMessage />} />
-                            <Route path="/management/order" element={<AccessDeniedMessage />} />
-                        </>
-                    }
+            <Routes>
+                {/*---Home---*/}
+                <Route path="" element={<><Home /></>} />
+                <Route path="/product-detail/:id" element={<><ProductDetail /></>} />
+                <Route path="/password/reset" element={<ResetPassword />} />
+                <Route path="/password/update/:email" element={<UpdatePassword />} />
+                <Route path="/auth" element={<><Auth /></>} />
+                <Route path="/auth/signup" element={<><SignUp /></>} />
+                <Route path="/auth/confirm" element={<><Confirm /></>} />
+                <Route path="/cart" element={<><Cart /></>} />
+                <Route path="/order" element={<><Order /></>} />
+                <Route path="/order-detail/:id" element={<><OrderDetail /></>} />
+                {/*---Management---*/}
+                {isAdmin ?
+                    <>
+                        <Route path="/management" element={<><AdminHome /></>} />
+                        <Route path="/management/user" element={<><AdminHome /></>} />
+                        <Route path="/management/category" element={<><AdminHome /></>} />
+                        <Route path="/management/product" element={<><ProductManagement /></>} />
+                        <Route path="/management/order" element={<><OrderManagement /></>} />
+                    </> :
+                    <>
+                        <Route path="/management" element={<AccessDeniedMessage />} />
+                        <Route path="/management/user" element={<AccessDeniedMessage />} />
+                        <Route path="/management/category" element={<AccessDeniedMessage />} />
+                        <Route path="/management/product" element={<AccessDeniedMessage />} />
+                        <Route path="/management/order" element={<AccessDeniedMessage />} />
+                    </>
+                }
 
-                </Routes>
-            </Router>
+            </Routes>
         </>
     );
 }
