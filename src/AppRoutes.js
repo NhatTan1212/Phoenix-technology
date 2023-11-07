@@ -18,7 +18,7 @@ import Cart from './page/home/cart/cart';
 import Order from './page/home/order/order';
 import OrderDetail from './page/home/order/orderDetail';
 import OrderManagement from './page/admin/orderManagement/orderManagement';
-
+require('dotenv').config()
 
 
 function AppRoutes() {
@@ -56,8 +56,8 @@ function AppRoutes() {
         <>
             <Routes>
                 {/*---Home---*/}
-                <Route path="" element={<><Home /></>} />
-                <Route path="/product-detail/:id" element={<><ProductDetail /></>} />
+                <Route path={process.env.URL_GIT_PAGE} element={<><Home /></>} />
+                <Route path={`${process.env.URL_GIT_PAGE}/product-detail/:id`} element={<><ProductDetail /></>} />
                 <Route path="/password/reset" element={<ResetPassword />} />
                 <Route path="/password/update/:email" element={<UpdatePassword />} />
                 <Route path="/auth" element={<><Auth /></>} />
