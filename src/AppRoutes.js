@@ -18,7 +18,7 @@ import Cart from './page/home/cart/cart';
 import Order from './page/home/order/order';
 import OrderDetail from './page/home/order/orderDetail';
 import OrderManagement from './page/admin/orderManagement/orderManagement';
-require('dotenv').config()
+
 
 
 function AppRoutes() {
