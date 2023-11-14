@@ -42,7 +42,7 @@ const SignUp = () => {
                 pass: password
             };
 
-            fetch("http://localhost:8000/requireregister", {
+            fetch("https://phoenixlt.azurewebsites.net/requireregister", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -109,7 +109,7 @@ const SignUp = () => {
         <div className={`container m-auto min-w-full h-auto`}  >
             <div className='wrapContent h-auto mb-[100px]'>
                 <div className='loginForm'>
-                    <h2>Sign Up</h2>
+                    <h2 className=''>Sign Up</h2>
                     <input
                         className='input'
                         placeholder='Name' type='text'

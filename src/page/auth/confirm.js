@@ -3,6 +3,7 @@ import './confirm.scss';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import '../../views/font.scss'
 import axios from 'axios';
+import Instance from '../../axiosInstance';
 
 const Confirm = () => {
 
@@ -20,7 +21,7 @@ const Confirm = () => {
             setEmailErr('Email không hợp lệ')
             return;
         } else {
-            axios.post(`http://localhost:8000/confirm/${email}`)
+            Instance.post(`/confirm/${email}`)
                 .then((res) => {
                     if (res.status) {
                         setIsSendEmailFail(false)

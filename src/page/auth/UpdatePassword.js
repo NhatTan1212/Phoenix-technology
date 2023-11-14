@@ -6,6 +6,7 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { faEyeSlash } from '@fortawesome/free-regular-svg-icons';
+import Instance from '../../axiosInstance';
 
 const UpdatePassword = () => {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -29,7 +30,7 @@ const UpdatePassword = () => {
             setPasswordErr('Password phải có ít nhất 6 ký tự.')
             return;
         } else {
-            axios.post(`http://localhost:8000/password/reset`,
+            Instance.post(`/password/reset`,
                 { email: email, password: password, token: token })
                 .then((res) => {
                     if (res.data.status) {

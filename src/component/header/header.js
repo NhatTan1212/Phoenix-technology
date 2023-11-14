@@ -9,6 +9,7 @@ import { faCartFlatbed, faUser, faBars, faAngleRight } from '@fortawesome/free-s
 import Cookies from 'js-cookie'; // Import thư viện js-cookie
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
+import Instance from '../../axiosInstance';
 
 
 const { Search } = Input;
@@ -81,7 +82,7 @@ function Header() {
     };
 
     const getProducts = () => {
-        axios.get('http://localhost:8000/home')
+        Instance.get('/home')
             .then((res) => {
                 setProducts(res.data)
             })
@@ -91,7 +92,7 @@ function Header() {
     }
 
     const getBrands = () => {
-        axios.get('http://localhost:8000/brands-list')
+        Instance.get('/brands-list')
             .then(response => {
                 // console.log(response.data);
                 setBrands(response.data);
@@ -102,7 +103,7 @@ function Header() {
             });
     }
     const getCategories = () => {
-        axios.get('http://localhost:8000/categories-list')
+        Instance.get('/categories-list')
             .then(response => {
                 // console.log(response.data);
                 setCategories(response.data);
@@ -119,7 +120,7 @@ function Header() {
         console.log(token, tokenGID);
 
         if (token !== undefined) {
-            axios.post('http://localhost:8000/cart', { token }, {
+            Instance.post('/cart', { token }, {
                 headers: {
                     "Content-Type": "application/json",
                 }
@@ -133,7 +134,7 @@ function Header() {
                     console.error('Error fetching data:', error);
                 });
         } else if (tokenGID !== undefined) {
-            axios.post('http://localhost:8000/cart', { tokenGID }, {
+            Instance.post('/cart', { tokenGID }, {
                 headers: {
                     "Content-Type": "application/json",
                 }

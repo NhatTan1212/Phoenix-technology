@@ -40,7 +40,7 @@ const Auth = () => {
             pass: password
         };
 
-        fetch("http://localhost:8000/requirelogin", {
+        fetch("https://phoenixlt.azurewebsites.net/requirelogin", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

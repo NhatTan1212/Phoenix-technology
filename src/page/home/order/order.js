@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Button, InputNumber, Space, Table, Input, Radio, Row, Select } from 'antd';
 import './order.scss'
 import { Link } from 'react-router-dom';
+import Instance from '../../../axiosInstance';
 
 function Order() {
     const token = Cookies.get('token');
@@ -115,7 +116,7 @@ function Order() {
         const keyToken = token ? 'token' : 'tokenGID'
         const valueToken = token ? token : tokenGID
 
-        axios.post('http://localhost:8000/order', { [keyToken]: valueToken }, {
+        Instance.post('/order', { [keyToken]: valueToken }, {
             headers: {
                 "Content-Type": "application/json",
             }

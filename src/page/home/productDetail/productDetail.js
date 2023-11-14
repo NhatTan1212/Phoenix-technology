@@ -10,6 +10,7 @@ import axios from 'axios';
 import './productDetail.scss'
 import Cookies from 'js-cookie';
 import { Descriptions } from 'antd';
+import Instance from '../../../axiosInstance';
 
 const { Header, Content, Footer, Sider } = Layout;
 const items1 = ['1', '2', '3'].map((key) => ({
@@ -46,7 +47,7 @@ const ProductDetail = () => {
 
     }, []);
     const getProductDetail = () => {
-        axios.get(`http://localhost:8000/product-detail/${id}`)
+        Instance.get(`/product-detail/${id}`)
             .then(response => {
                 // console.log(response.data);
                 setProductDetail(response.data);
@@ -78,7 +79,7 @@ const ProductDetail = () => {
             quantity: productDetail.data.quantity //số lượng hàng còn trong kho
         }
         if (token !== undefined) {
-            axios.post('http://localhost:8000/addcart', data, {
+            Instance.post('/addcart', data, {
                 headers: {
                     "Content-Type": "application/json",
                 }
@@ -93,7 +94,7 @@ const ProductDetail = () => {
                     console.error('Error fetching data:', error);
                 });
         } else if (tokenGID !== undefined) {
-            axios.post('http://localhost:8000/addcart', dataGID, {
+            Instance.post('/addcart', dataGID, {
                 headers: {
                     "Content-Type": "application/json",
                 }

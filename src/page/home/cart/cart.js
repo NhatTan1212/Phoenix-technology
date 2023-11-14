@@ -7,6 +7,7 @@ import { Button, InputNumber, Space, Table, Input, Radio, Row, Select, Modal } f
 import './cart.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
+import Instance from '../../../axiosInstance';
 
 function Cart() {
     const token = Cookies.get('token');
@@ -136,7 +137,7 @@ function Cart() {
             product_id: productId,
         };
 
-        axios.post('http://localhost:8000/deletecart', requestData, {
+        Instance.post('/deletecart', requestData, {
             headers: {
                 "Content-Type": "application/json",
             }
@@ -162,7 +163,7 @@ function Cart() {
             cart: cart
         };
 
-        axios.post('http://localhost:8000/updatecart', requestData, {
+        Instance.post('/updatecart', requestData, {
             headers: {
                 "Content-Type": "application/json",
             }
@@ -234,7 +235,7 @@ function Cart() {
         // console.log(token, tokenGID);
 
         if (token !== undefined) {
-            axios.post('http://localhost:8000/cart', { token }, {
+            Instance.post('/cart', { token }, {
                 headers: {
                     "Content-Type": "application/json",
                 }
@@ -249,7 +250,7 @@ function Cart() {
                     console.error('Error fetching data:', error);
                 });
         } else if (tokenGID !== undefined) {
-            axios.post('http://localhost:8000/cart', { tokenGID }, {
+            Instance.post('/cart', { tokenGID }, {
                 headers: {
                     "Content-Type": "application/json",
                 }
@@ -333,7 +334,7 @@ function Cart() {
             avatar: cart[0].avatar
         }
         console.log(dataOder)
-        axios.post('http://localhost:8000/dataorder', dataOder, {
+        Instance.post('/dataorder', dataOder, {
             headers: {
                 "Content-Type": "application/json",
             }

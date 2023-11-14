@@ -6,6 +6,7 @@ import { Button, InputNumber, Space, Table, Input, Radio, Row, Select } from 'an
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import './orderDetail.scss'
+import Instance from '../../../axiosInstance';
 
 function OrderDetail() {
     const { id } = useParams();
@@ -80,7 +81,7 @@ function OrderDetail() {
     }, []);
     const getorderDetail = () => {
 
-        axios.get(`http://localhost:8000/orderdetails/${id}`)
+        Instance.get(`/orderdetails/${id}`)
             .then(response => {
                 console.log(response.data);
                 setOrderDetail(response.data.orderDetails);
@@ -99,7 +100,7 @@ function OrderDetail() {
         const keyToken = token ? 'token' : 'tokenGID'
         const valueToken = token ? token : tokenGID
 
-        axios.post('http://localhost:8000/order', { [keyToken]: valueToken }, {
+        Instance.post('/order', { [keyToken]: valueToken }, {
             headers: {
                 "Content-Type": "application/json",
             }

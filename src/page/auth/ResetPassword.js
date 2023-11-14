@@ -3,6 +3,7 @@ import './ResetPassword.scss';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import '../../views/font.scss'
 import axios from 'axios';
+import Instance from '../../axiosInstance';
 
 const ResetPassword = () => {
 
@@ -14,13 +15,14 @@ const ResetPassword = () => {
         const regexEmail = /^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/;
 
         if (email === '') {
-            return;
+            setIsSendEmailFail(true)
+            setEmailErr("Vui lòng nhập email cần đổi mật khẩu!")
         } else if (!regexEmail.test(email)) {
             setIsSendEmailFail(true)
             setEmailErr('Email không hợp lệ')
             return;
         } else {
-            axios.post(`http://localhost:8000/password/email`, { email: email })
+            Instance.post(`/password/email`, { email: email })
                 .then((res) => {
                     if (res.status) {
                         setIsSendEmailFail(false)
@@ -38,16 +40,26 @@ const ResetPassword = () => {
     };
 
     return (
-        <div className='container'>
-            <div className='wrapContent'>
-                <div className='confirmationForm'>
-                    <h2>Reset Password</h2>
-                    <input placeholder='Email' type="email" onChange={(e) => { setEmail(e.target.value) }}></input>
+        <div className={`container m-auto min-w-full h-auto`}  >
+            <div className='wrapContent h-auto mb-[100px]'>
+                <div className='loginForm'>
+                    <h2 className='my-[50px] font-bold text-[20px]'>Reset Password</h2>
+                    <input className='pl-[10px]' placeholder='Email' type="email"
+                        onChange={(e) => {
+                            setIsSendEmailFail(false)
+                            setEmail(e.target.value)
+                        }}></input>
 
                     <button className='btnSendMail' onClick={() => { handleConfirm() }}>RESET PASSWORD</button>
                     <div className='wrap-err-mess'>
                         {isSendMailFail ? <p className='err-mess'>*{emailErr}</p>
                             : null}
+                    </div>
+                    <div >
+                        <div className='labelSignUp'>
+                            <label>Return to the sign in page?</label>
+                            <Link to='/auth'>Sign In</Link>
+                        </div>
                     </div>
                 </div>
                 {/* <div className='img'>

@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCartFlatbed, faUser, faBars } from '@fortawesome/free-solid-svg-icons';
 import Cookies from 'js-cookie'; // Import thư viện js-cookie
 import axios from 'axios';
+import Instance from '../../axiosInstance';
 
 const gridStyle = {
     width: '20%',
@@ -25,8 +26,8 @@ function Home() {
         getBrands();
     }, []);
 
-    const getProducts = () => {
-        axios.get('http://localhost:8000/home')
+    const getProducts = async () => {
+        await Instance.get('/home')
             .then((res) => {
                 setProducts(res.data)
                 sortHotSaleProducts(res.data);
@@ -36,7 +37,7 @@ function Home() {
             })
     }
     const getLaptopGaming = () => {
-        axios.get('http://localhost:8000/laptop-gaming')
+        Instance.get('/laptop-gaming')
             .then((res) => {
                 setLaptopGaming(res.data)
             })
@@ -46,7 +47,7 @@ function Home() {
     }
 
     const getBrands = () => {
-        axios.get('http://localhost:8000/brands-list')
+        Instance.get('/brands-list')
             .then(response => {
                 // console.log(response.data);
                 setBrands(response.data);
@@ -125,13 +126,13 @@ function Home() {
                     draggable
                 >
                     <div>
-                        <img src='http://localhost:8000/upload/banner2.png'></img>
+                        <img src='https://phoenixlt.azurewebsites.net/upload/banner2.png'></img>
                     </div>
                     <div>
-                        <img src='http://localhost:8000/upload/banner1.jpg'></img>
+                        <img src='https://phoenixlt.azurewebsites.net/upload/banner1.jpg'></img>
                     </div>
                     <div>
-                        <img src='http://localhost:8000/upload/banner3.png'></img>
+                        <img src='https://phoenixlt.azurewebsites.net/upload/banner3.png'></img>
                     </div>
                 </Carousel>
             </div>
@@ -160,7 +161,7 @@ function Home() {
                     </Card>
 
                     <div className='mt-[30px]'>
-                        <img src='http://localhost:8000/upload/sub-banner.png'></img>
+                        <img src='https://phoenixlt.azurewebsites.net/upload/sub-banner.png'></img>
                     </div>
                 </div>
 
