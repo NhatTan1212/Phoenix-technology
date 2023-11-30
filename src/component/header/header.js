@@ -35,7 +35,7 @@ function Header() {
         || location.pathname.startsWith('/management/');
     // console.log(isHomePage)
     const renderOption = (item) => (
-        <a href={`/Phoenix-technology/product-detail/${item.id}`} className='flex'>
+        <a href={`/Phoenix-technology/#/product-detail/${item.id}`} className='flex'>
             <img
                 src={item.avatar}
                 alt={item.prod_name}

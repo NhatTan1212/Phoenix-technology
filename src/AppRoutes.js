@@ -18,6 +18,7 @@ import Cart from './page/home/cart/cart';
 import Order from './page/home/order/order';
 import OrderDetail from './page/home/order/orderDetail';
 import OrderManagement from './page/admin/orderManagement/orderManagement';
+import AllProduct from './page/home/AllProduct/AllProduct';
 
 
 
@@ -57,6 +58,7 @@ function AppRoutes() {
             <Routes>
                 {/*---Home---*/}
                 <Route path="" element={<><Home /></>} />
+                <Route path="/allproduct" element={<><AllProduct /></>} />
                 <Route path="/product-detail/:id" element={<><ProductDetail /></>} />
                 <Route path="/password/reset" element={<ResetPassword />} />
                 <Route path="/password/update/:email" element={<UpdatePassword />} />

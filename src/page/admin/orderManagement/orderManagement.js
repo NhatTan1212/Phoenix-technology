@@ -240,7 +240,7 @@ const OrderManagement = () => {
 
     const getOrders = () => {
 
-        axios.post('http://localhost:8000/order-management', { token: token }, {
+        axios.post('https://phoenixlt.azurewebsites.net/order-management', { token: token }, {
             headers: {
                 "Content-Type": "application/json",
             }
@@ -284,7 +284,7 @@ const OrderManagement = () => {
             is_approved: status === 'is_approved' ? 1 : orderEditing.is_approved,
         }
         console.log(statusOrderChanged);
-        axios.post(`http://localhost:8000/order-management/update/${orderEditing.id}`, statusOrderChanged, {
+        axios.post(`https://phoenixlt.azurewebsites.net/order-management/update/${orderEditing.id}`, statusOrderChanged, {
             headers: {
                 "Content-Type": "application/json",
             }

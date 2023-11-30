@@ -14,12 +14,10 @@ const Auth = () => {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const successMessage = queryParams.get('success');
-    const [isSignUp, setIsSignUp] = useState(false);
-    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-    const [signupError, setSignupError] = useState('');
+    const [signInError, setSignupError] = useState(false);
     const [emailInvalid, setEmailInvalid] = useState(false);
     const [emailExists, setEmailExists] = useState(false);
     const [errMessage, setErrMassage] = useState('');
@@ -33,38 +31,51 @@ const Auth = () => {
             return;
         } else {
             setEmailInvalid(false);
+            if (password === '') {
+                setSignupError(true);
+                setErrMassage('Mật khẩu không được để trống');
+                return;
+            } else {
+                setSignupError(false);
+            }
         }
 
-        const dataUser = {
-            email: email,
-            pass: password
-        };
+        if (!signInError) {
+            const dataUser = {
+                email: email,
+                pass: password
+            };
 
-        fetch("https://phoenixlt.azurewebsites.net/requirelogin", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(dataUser),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                if (data.success) {
-                    // localStorage.setItem('isLogin', true);
-                    localStorage.setItem('user_name', data.user_name);
-                    localStorage.setItem('role', data.role);
-                    Cookies.set('token', data.token, { expires: 1 });
-                    Cookies.remove('tokenGID');
-                    window.location.href = data.redirectUrl;
-                    // setIncorrectPass(false);
-                } else {
-                    setIsSignUpFail(true);
-                    setErrMassage(data.errMessage);
-                }
+            fetch("https://phoenixlt.azurewebsites.net/requirelogin", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(dataUser),
             })
-            .catch((error) => {
-                console.error("Error:", error);
-            });
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        // localStorage.setItem('isLogin', true);
+                        localStorage.setItem('user_name', data.user_name);
+                        localStorage.setItem('role', data.role);
+                        Cookies.set('token', data.token, { expires: 1 });
+                        Cookies.remove('tokenGID');
+                        window.location.href = data.redirectUrl;
+                        // setIncorrectPass(false);
+                    } else {
+                        setIsSignUpFail(true);
+                        setErrMassage(data.errMessage);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+
+        }
+        setSignupError(false)
+        setIsSignUpFail(false);
+        setErrMassage('');
     };
 
     const showPassword = () => {
@@ -113,13 +124,14 @@ const Auth = () => {
                     <div className='wrap-err-mess'>
                         {emailInvalid ? (
                             <p className='err-mess'>*Email không hợp lệ</p>
-                        ) : isSignUpFail ? (
-                            <p className='err-mess'>
-                                *{errMessage === 'Tài khoản chưa được xác thực.'
-                                    ? <span>{errMessage} <a href='/auth/confirm'>Nhấp vào đây để xác thực tài khoản</a></span>
-                                    : errMessage}
-                            </p>
-                        ) : null}
+                        )
+                            : isSignUpFail ? (
+                                <p className='err-mess'>
+                                    *{errMessage === 'Tài khoản chưa được xác thực.'
+                                        ? <span>{errMessage} <a href='/auth/confirm'>Nhấp vào đây để xác thực tài khoản</a></span>
+                                        : errMessage}
+                                </p>
+                            ) : null}
                     </div>
                     <div className="forgot-pass">
                         <Link to="/password/reset">Forgot Password?</Link>

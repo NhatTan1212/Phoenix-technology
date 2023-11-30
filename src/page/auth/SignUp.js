@@ -13,24 +13,34 @@ const SignUp = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [retypePassword, setRetypePassword] = useState('');
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [signupError, setSignupError] = useState('');
     const [emailInvalid, setEmailInvalid] = useState(false);
     const [nameInvalid, setNameInvalid] = useState(false);
     const [passwordInValid, setPasswordInvalid] = useState(false);
+    const [rePasswordInValid, setRePasswordInvalid] = useState(false);
     const [emailExists, setEmailExists] = useState(false);
     const [incorrectPass, setIncorrectPass] = useState(false);
     const [hasNameChanged, setHasNameChanged] = useState(false);
     const [hasEmailChanged, setHasEmailChanged] = useState(false);
     const [hasPasswordChanged, setHasPasswordChanged] = useState(false);
+    const [hasRePasswordChanged, setHasRePasswordChanged] = useState(false);
+    const [errMessage, setErrMassage] = useState('');
+
 
     // const toggleSignUp = () => {
     //     setIsSignUp(!isSignUp);
     // };
 
     const handleSignUp = () => {
-        if (name === '' || email === '' || password === '') {
+        if (name === '' || email === '' || password === '' || retypePassword === '') {
             setSignupError(true)
+        }
+        if (password !== retypePassword) {
+            setSignupError(true);
+            setErrMassage('Mật khẩu và mật khẩu nhập lại không khớp');
+            return;
         }
         if (name === '' || email === '' || password === ''
             || emailInvalid || nameInvalid || passwordInValid) {
@@ -99,6 +109,19 @@ const SignUp = () => {
         setPasswordInvalid(!isPasswordValid);
     };
 
+    const onChangeRetypePassword = (e) => {
+        const newPassword = e.target.value;
+        setHasRePasswordChanged(true);
+        setRetypePassword(newPassword)
+        if (newPassword === password) {
+            setRePasswordInvalid(false);
+        } else {
+            setRePasswordInvalid(true);
+
+        }
+
+    };
+
 
 
     const showPassword = () => {
@@ -143,10 +166,28 @@ const SignUp = () => {
                         <FontAwesomeIcon icon={faEye} className='eye-icon' onClick={() => { showPassword() }} />
 
                     </div>
+                    <div className='wrap-password'>
+                        <input
+
+                            className='input' placeholder='Retype Password'
+                            type={isPasswordVisible ? 'text' : 'password'}
+                            onChange={(e) => { onChangeRetypePassword(e) }}>
+                        </input>
+                        <FontAwesomeIcon icon={faEye} className='eye-icon' onClick={() => { showPassword() }} />
+
+                    </div>
+                    <div className='wrap-err-mess'>
+                        {hasRePasswordChanged && retypePassword == '' ? <p className='err-mess'>*Retype Password không được để trống</p>
+                            : rePasswordInValid ? <p className='err-mess'>*{errMessage}</p> : null
+                        }
+
+                    </div>
+
                     <div className='wrap-err-mess'>
                         {hasPasswordChanged && password == '' ? <p className='err-mess'>*Password không được để trống</p>
                             : passwordInValid ? <p className='err-mess'>*Password phải có ít nhất 6 ký tự</p>
-                                : password.length > 255 ? <p className='err-mess'>*Password không được vượt quá 255 ký tự</p> : null
+                                : password.length > 255 ? <p className='err-mess'>*Password không được vượt quá 255 ký tự</p>
+                                    : null
                         }
 
                     </div>

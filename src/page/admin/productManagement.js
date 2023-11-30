@@ -12,6 +12,7 @@ import { text } from '@fortawesome/fontawesome-svg-core';
 import Cookies from 'js-cookie';
 import TextArea from 'antd/es/input/TextArea';
 import Context from '../../store/Context';
+import { GetProducts } from '../../callAPI/api';
 
 const ProductManagement = () => {
     let token = Cookies.get('token')
@@ -176,16 +177,12 @@ const ProductManagement = () => {
     };
 
     const getProducts = () => {
-        axios.get('http://localhost:8000/home')
-            .then((res) => {
-                setProducts(res.data)
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-    }
+        GetProducts().then((data) => {
+            setProducts(data)
+        })
+    };
     const getBrands = () => {
-        axios.get('http://localhost:8000/brands-list')
+        axios.get('https://phoenixlt.azurewebsites.net/brands-list')
             .then(response => {
                 // console.log(response.data.map((brand) => {
                 //     return brand.name
@@ -203,7 +200,7 @@ const ProductManagement = () => {
     }
 
     const getCategories = () => {
-        axios.get('http://localhost:8000/categories-list')
+        axios.get('https://phoenixlt.azurewebsites.net/categories-list')
             .then(response => {
                 // console.log("categories: \n", response.data);
                 setCategories(response.data);
@@ -218,7 +215,7 @@ const ProductManagement = () => {
     }
 
     const getImages = () => {
-        axios.get('http://localhost:8000/list-image')
+        axios.get('https://phoenixlt.azurewebsites.net/list-image')
             .then(response => {
                 // console.log("images: \n", response.data);
                 setImages(response.data);
