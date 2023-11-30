@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "https://nhattan1212.github.io/Phoenix-technology/static/css/main.5b54db10.css",
-    "main.js": "https://nhattan1212.github.io/Phoenix-technology/static/js/main.229f19f2.js",
+    "main.css": "https://nhattan1212.github.io/Phoenix-technology/static/css/main.be2f2a26.css",
+    "main.js": "https://nhattan1212.github.io/Phoenix-technology/static/js/main.d35d790d.js",
     "static/js/787.55ca77aa.chunk.js": "https://nhattan1212.github.io/Phoenix-technology/static/js/787.55ca77aa.chunk.js",
     "index.html": "https://nhattan1212.github.io/Phoenix-technology/index.html",
-    "main.5b54db10.css.map": "https://nhattan1212.github.io/Phoenix-technology/static/css/main.5b54db10.css.map",
-    "main.229f19f2.js.map": "https://nhattan1212.github.io/Phoenix-technology/static/js/main.229f19f2.js.map",
+    "main.be2f2a26.css.map": "https://nhattan1212.github.io/Phoenix-technology/static/css/main.be2f2a26.css.map",
+    "main.d35d790d.js.map": "https://nhattan1212.github.io/Phoenix-technology/static/js/main.d35d790d.js.map",
     "787.55ca77aa.chunk.js.map": "https://nhattan1212.github.io/Phoenix-technology/static/js/787.55ca77aa.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.5b54db10.css",
-    "static/js/main.229f19f2.js"
+    "static/css/main.be2f2a26.css",
+    "static/js/main.d35d790d.js"
   ]
 }
