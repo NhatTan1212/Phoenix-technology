@@ -8,7 +8,7 @@ function Content() {
     const setIsShowFloatLayer = context.setIsShowFloatLayer
     return (
 
-        <div className='page-content' onClick={(e) => { isShowFloatLayer ? setIsShowFloatLayer(false) : setIsShowFloatLayer(false) }}>
+        <div className='page-content bg-[#f0f0f0]' onClick={(e) => { isShowFloatLayer ? setIsShowFloatLayer(false) : setIsShowFloatLayer(false) }}>
             <>
                 <AppRoutes></AppRoutes>
             </>

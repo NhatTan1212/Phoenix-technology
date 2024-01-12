@@ -1,6 +1,6 @@
 import axios from 'axios';
 const Instance = axios.create({
-    baseURL: 'https://phoenixlt.azurewebsites.net',
+    baseURL: 'http://localhost:8000',
     timeout: 10000,
 });
 

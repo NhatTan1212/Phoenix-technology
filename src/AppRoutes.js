@@ -47,7 +47,7 @@ function AppRoutes() {
             Cookies.set('tokenGID', guestId, { expires: 31 })
             console.log(guestId)
         }
-    }, [])
+    }, [isAdmin])
 
     function AccessDeniedMessage() {
         return <div className='mt-4 font-bold'>Bạn không đủ quyền truy cập vào đường dẫn này!</div>;
@@ -58,7 +58,7 @@ function AppRoutes() {
             <Routes>
                 {/*---Home---*/}
                 <Route path="" element={<><Home /></>} />
-                <Route path="/allproduct" element={<><AllProduct /></>} />
+                <Route path="/laptop/:query" element={<><AllProduct /></>} />
                 <Route path="/product-detail/:id" element={<><ProductDetail /></>} />
                 <Route path="/password/reset" element={<ResetPassword />} />
                 <Route path="/password/update/:email" element={<UpdatePassword />} />

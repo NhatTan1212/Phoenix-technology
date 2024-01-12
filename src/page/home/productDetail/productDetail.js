@@ -11,6 +11,8 @@ import './productDetail.scss'
 import Cookies from 'js-cookie';
 import { Descriptions } from 'antd';
 import Instance from '../../../axiosInstance';
+import ModalProductManager from '../../../component/management/ModalProductManager';
+import { GetBrands, GetCategories } from '../../../callAPI/api';
 
 const { Header, Content, Footer, Sider } = Layout;
 const items1 = ['1', '2', '3'].map((key) => ({
@@ -31,6 +33,11 @@ const ProductDetail = () => {
     const [images, setImages] = useState([]);
     const [buyQuantity, setBuyQuantity] = useState('1');
     const [messageApi, contextHolder] = message.useMessage();
+    const [isViewDetailsOpened, setIsViewDetailsOpened] = useState('false');
+    const [brands, setBrands] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [brandDefault, setBrandDefault] = useState('')
+    const [categoryDefault, setCategoryDefault] = useState('')
     const success = (text) => {
         messageApi.open({
             type: 'success',
@@ -44,14 +51,15 @@ const ProductDetail = () => {
 
     useEffect(() => {
         getProductDetail();
-
+        getBrands();
+        getCategories();
     }, []);
     const getProductDetail = () => {
         Instance.get(`/product-detail/${id}`)
             .then(response => {
                 // console.log(response.data);
                 setProductDetail(response.data);
-                // console.log(productDetail)
+                console.log(response.data)
                 setImages(response.data.images)
                 // console.log(response.data.images)
             })
@@ -59,6 +67,21 @@ const ProductDetail = () => {
                 // Handle errors here
                 console.error('Error fetching data:', error);
             });
+    }
+    const getBrands = () => {
+        GetBrands().then(response => {
+            // console.log(response.data.map((brand) => {
+            //     return brand.name
+            // }, []));
+            setBrands(response);
+        })
+    }
+
+    const getCategories = () => {
+        GetCategories().then(response => {
+            // console.log("categories: \n", response.data);
+            setCategories(response);
+        })
     }
 
     const handleAddCart = () => {
@@ -111,10 +134,38 @@ const ProductDetail = () => {
         }
 
     }
+    const viewDetailsProduct = () => {
+        setIsViewDetailsOpened(true)
+        const getBrand = brands.find((brand) => {
+            return brand.brand_id === productDetail.data.brand_id
+
+        });
+        setBrandDefault(getBrand.name)
+
+        const getCategory = categories.find((category) => {
+            return category.category_id === productDetail.data.category_id
+
+        });
+        setCategoryDefault(getCategory.name)
+    }
 
     return (
         <Layout>
             {contextHolder}
+            {isViewDetailsOpened === true ?
+                <ModalProductManager
+                    title={'Xem chi tiết sản phẩm - ' + productDetail.data.prod_name}
+                    isActioning={isViewDetailsOpened}
+                    width={800}
+                    setIsActioning={setIsViewDetailsOpened}
+                    actioningProduct={productDetail.data}
+                    fileList={images}
+                    setFileList={setImages}
+                    brandDefault={brandDefault}
+                    categoryDefault={categoryDefault}
+                ></ModalProductManager>
+                : null
+            }
             <Content
                 className='w-10/12 mx-[auto]'
                 style={{
@@ -130,7 +181,7 @@ const ProductDetail = () => {
                     </Breadcrumb.Item>
                     {productDetail.category && (
                         <Breadcrumb.Item>
-                            <Link to={'/'}>{productDetail.category}</Link>
+                            <Link to={`/laptop/category=${productDetail.slug}`}>{productDetail.category}</Link>
                         </Breadcrumb.Item>
                     )}
                     {productDetail.data && (
@@ -239,9 +290,14 @@ const ProductDetail = () => {
                                 </p>
                             </Col>
                             <Col span={8} className='px-[15px]'>
-                                <h3 className='text-[#378914] text-[16px] my-4 font-bold'>
-                                    Thông số kỹ thuật
-                                </h3>
+                                <div className='flex justify-between'>
+                                    <h3 className='text-[#000] text-[16px] my-4 font-bold'>
+                                        Thông số kỹ thuật
+                                    </h3>
+                                    <h3 className='text-[#dd0000] text-[14px] my-4 font-bold
+                                    cursor-pointer hover:underline'
+                                        onClick={() => { viewDetailsProduct() }}>Xem chi tiết</h3>
+                                </div>
                                 <table className='tb-detail'>
                                     {productDetail.data && (
                                         <tbody>
@@ -251,7 +307,9 @@ const ProductDetail = () => {
                                             </tr>
                                             <tr>
                                                 <td>Hãng</td>
-                                                <td>{productDetail.data.manufacturer}</td>
+                                                <td>{brands.find((brand) => {
+                                                    return brand.brand_id === productDetail.data.brand_id
+                                                }).name}</td>
                                             </tr>
                                             <tr>
                                                 <td>Cpu</td>
@@ -260,10 +318,6 @@ const ProductDetail = () => {
                                             <tr>
                                                 <td>Ổ cứng</td>
                                                 <td>{productDetail.data.hard_drive}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Mux_switch</td>
-                                                <td>{productDetail.data.mux_switch}</td>
                                             </tr>
                                             <tr>
                                                 <td>Webcam</td>

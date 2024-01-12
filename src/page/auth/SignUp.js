@@ -52,7 +52,7 @@ const SignUp = () => {
                 pass: password
             };
 
-            fetch("https://phoenixlt.azurewebsites.net/requireregister", {
+            fetch("http://localhost:8000/requireregister", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import Context from '../../store/Context';
 import '../header/header.scss';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation, useParams } from 'react-router-dom';
 import logo from '../../images/logo-phoenix.png'
 import { AutoComplete, Input } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -14,6 +14,8 @@ import Instance from '../../axiosInstance';
 
 const { Search } = Input;
 function Header() {
+    const { param } = useParams(); // Lấy tham số từ URL
+
     const context = useContext(Context)
     const isCartChange = context.isCartChange
     const setIsCartChange = context.setIsCartChange
@@ -35,7 +37,7 @@ function Header() {
         || location.pathname.startsWith('/management/');
     // console.log(isHomePage)
     const renderOption = (item) => (
-        <a href={`/Phoenix-technology/#/product-detail/${item.id}`} className='flex'>
+        <Link to={`/product-detail/${item.id}`} className='flex'>
             <img
                 src={item.avatar}
                 alt={item.prod_name}
@@ -47,7 +49,7 @@ function Header() {
                 }}
             />
             <p className='' style={{ textWrap: 'wrap' }}>{item.prod_description}</p>
-        </a>
+        </Link>
     );
 
 
@@ -297,7 +299,7 @@ function Header() {
                             {categories.map((category) => (
                                 <li key={category.category_id} className=' pt-[8px] 
                                 pl-[12px]'>
-                                    <Link className='text-black'>
+                                    <Link to={`laptop/category=${category.slug}`} className='text-black'>
                                         {category.name}
                                     </Link>
                                 </li>
@@ -305,7 +307,7 @@ function Header() {
                             {brands.map((brand) => (
                                 <li key={brand.brand_id} className=' pt-[10px] 
                                 pl-[12px] last:pb-[10px]'>
-                                    <Link to='' className='text-black'>
+                                    <Link to={`laptop/brand=${brand.slug}`} className='text-black'>
                                         Laptop {brand.name}
 
                                     </Link>
@@ -316,7 +318,7 @@ function Header() {
                     </li>
                     {brands.map((brand) => (
                         <li key={brand.brand_id} className='brands pl-5'>
-                            <Link to='' className=''>
+                            <Link to={`laptop/brand=${brand.slug}`} className=''>
                                 <img src={brand.image}></img>
 
                             </Link>

@@ -126,13 +126,13 @@ function Home() {
                     draggable
                 >
                     <div>
-                        <img src='https://phoenixlt.azurewebsites.net/upload/banner2.png'></img>
+                        <img src='http://localhost:8000/upload/banner2.png'></img>
                     </div>
                     <div>
-                        <img src='https://phoenixlt.azurewebsites.net/upload/banner1.jpg'></img>
+                        <img src='http://localhost:8000/upload/banner1.jpg'></img>
                     </div>
                     <div>
-                        <img src='https://phoenixlt.azurewebsites.net/upload/banner3.png'></img>
+                        <img src='http://localhost:8000/upload/banner3.png'></img>
                     </div>
                 </Carousel>
             </div>
@@ -143,7 +143,9 @@ function Home() {
                         <h2 className='px-[10px] py-[10px] bg-[#c8191f] text-white
                     inline-block font-bold text-[20px] rounded-t-[10px]'
                         >SẢN PHẨM KHUYẾN MÃI HOT NHẤT</h2>
-                        <Link className='font-bold text-[#c8191f]'>{"xem tất cả >>"}</Link>
+                        <Link
+                            to={'/laptop/allproduct'}
+                            className='font-bold text-[#c8191f]'>{"xem tất cả >>"}</Link>
                     </div>
                     <Card className=' w-[100%] h-auto'>
                         {hotSaleProducts.map(renderListProduct)}
@@ -154,14 +156,16 @@ function Home() {
                         <h2 className='px-[10px] py-[10px] bg-[#c8191f] text-white
                     inline-block font-bold text-[20px] rounded-t-[10px]'
                         >Laptop Gaming</h2>
-                        <Link className='font-bold text-[#c8191f]'>{"xem tất cả >>"}</Link>
+                        <Link
+                            to={'/laptop/category=laptop-gaming'}
+                            className='font-bold text-[#c8191f]'>{"xem tất cả >>"}</Link>
                     </div>
                     <Card className=' w-[100%] h-auto'>
                         {laptopGaming.slice(0, 5).map(renderListProduct)}
                     </Card>
 
                     <div className='mt-[30px]'>
-                        <img src='https://phoenixlt.azurewebsites.net/upload/sub-banner.png'></img>
+                        <img src='http://localhost:8000/upload/sub-banner.png'></img>
                     </div>
                 </div>
 
