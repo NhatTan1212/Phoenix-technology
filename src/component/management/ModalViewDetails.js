@@ -10,10 +10,10 @@ const ModalViewDetails = ({ actioningProduct, fileList, brandDefault,
     return (
         <div className='wrap-modal-view w-full'>
             {console.log(fileList)}
-            <div className='relative'>
+            <div className='relative min-h-[450px]'>
                 <Image
                     src={actioningProduct.avatar}
-                    className='avatar-modal-view max-w-[450px] ml-[15%]'
+                    className='avatar-modal-view max-w-[450px] ml-[15%] object-contain'
                 ></Image>
 
                 <Image.PreviewGroup
@@ -93,7 +93,56 @@ const ModalViewDetails = ({ actioningProduct, fileList, brandDefault,
                                 }
                             </ul>
                             <h3 className='font-bold text-[16px] text-[#464646] bg-[#f8f9fa] py-1'>RAM</h3>
-                            <ul></ul>
+                            <ul>
+                                {actioningProduct.ram.split(',')[0] &&
+                                    <li className='pb-1'>
+                                        <span className='text-red-500'>* </span>
+                                        Dung lượng RAM:
+                                        <span>{' ' + actioningProduct.ram.split(',')[0]}</span>
+                                    </li>
+                                }
+
+                                {actioningProduct.ram.split(',')[1] &&
+                                    <li className='pb-1'>
+                                        <span className='text-red-500'>* </span>
+                                        Loại RAM:
+                                        <span>{' ' + actioningProduct.ram.split(',')[1]}</span>
+                                    </li>
+                                }
+
+                                {actioningProduct.ram.split(',')[2] &&
+                                    <li className='pb-1'>
+                                        <span className='text-red-500'>* </span>
+                                        Số khe cắm rời:
+                                        <span>{' ' + actioningProduct.ram.split(',')[2]}</span>
+                                    </li>
+                                }
+
+                                {actioningProduct.ram.split(',')[3] &&
+                                    <li className='pb-1'>
+                                        <span className='text-red-500'>* </span>
+                                        Số khe RAM còn lại:
+                                        <span>{' ' + actioningProduct.ram.split(',')[3]}</span>
+                                    </li>
+                                }
+
+                                {actioningProduct.ram.split(',')[4] &&
+                                    <li className='pb-1'>
+                                        <span className='text-red-500'>* </span>
+                                        Số RAM onboard:
+                                        <span>{' ' + actioningProduct.ram.split(',')[4]}</span>
+                                    </li>
+                                }
+
+                                {actioningProduct.ram.split(',')[5] &&
+                                    <li className='pb-1'>
+                                        <span className='text-red-500'>* </span>
+                                        Hỗ trợ RAM tối đa:
+                                        <span>{' ' + actioningProduct.ram.split(',')[5]}</span>
+                                    </li>
+                                }
+
+                            </ul>
                             <h3 className='font-bold text-[16px] text-[#464646] bg-[#f8f9fa] py-1'>Màn hình</h3>
                             <ul>
                                 <li className='pb-1'>
@@ -113,7 +162,40 @@ const ModalViewDetails = ({ actioningProduct, fileList, brandDefault,
                                 </li>
                             </ul>
                             <h3 className='font-bold text-[16px] text-[#464646] bg-[#f8f9fa] py-1'>Đồ họa</h3>
-                            <ul></ul>
+                            <ul className='flex w-full'>
+                                <li className='w-1/2'>
+                                    <table className='border-[1px] border-[solid] w-full'>
+                                        <thead className='w-full'>
+                                            <th className='p-2 border-b-[1px] w-1/2'>Card rời</th>
+                                            <th className='p-2 border-b-[1px] w-1/2'></th>
+                                        </thead>
+                                        <tbody>
+                                            {
+                                                actioningProduct.graphics.split(',')[0] &&
+                                                <tr className=''>
+                                                    <td className='p-2 border-b-[1px]'>
+                                                        Model
+                                                    </td>
+                                                    <td className='p-2 border-b-[1px]'>
+                                                        {actioningProduct.graphics.split(',')[0]}
+                                                    </td>
+                                                </tr>
+                                            }
+                                            {
+                                                actioningProduct.graphics.split(',')[1] &&
+                                                <tr className=''>
+                                                    <td className='p-2 border-b-[1px]'>Bộ nhớ</td>
+                                                    <td className='p-2 border-b-[1px]'>
+                                                        {actioningProduct.graphics.split(',')[1]}
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </li>
+                                <li></li>
+                            </ul>
                             <h3 className='font-bold text-[16px] text-[#464646] bg-[#f8f9fa] py-1'>Giao tiếp & Kết nối</h3>
                             <ul>
                                 <li className='pb-1'>

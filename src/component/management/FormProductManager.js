@@ -4,13 +4,14 @@ import {
     Input, Select, Image, Row, Col, Upload
 } from 'antd';
 import { PlusOutlined, } from '@ant-design/icons';
-import '../../page/admin/productManagement.scss'
+import '../../component/management/modalFPM.scss'
 import Cookies from 'js-cookie';
 import TextArea from 'antd/es/input/TextArea';
 import Context from '../../store/Context';
 
+
 const FormProductManager = ({ isActioning, setIsActioning, setActioningProduct, actioningProduct, fileList, setFileList, brandDefault,
-    categoryDefault, brands, categories }) => {
+    categoryDefault, brands, categories, brandsSelect, categorySelect }) => {
     let token = Cookies.get('token')
     const context = useContext(Context)
     const [productName, setProductName] = useState('')
@@ -32,10 +33,8 @@ const FormProductManager = ({ isActioning, setIsActioning, setActioningProduct, 
     const [pin, setPin] = useState('')
     const [avatar, setAvatar] = useState(null)
     const [selectedItems, setSelectedItems] = useState('');
-    const [brandsSelect, setBrandsSelect] = useState([])
     const [brandSelected, setBrandSelected] = useState('')
     const [categoryIDSelected, setCategoryIDSelected] = useState('');
-    const [categorySelect, setCategorySelect] = useState([])
     const [categorySelected, setCategorySelected] = useState('')
     const [searchText, setSearchText] = useState('');
     const [previewOpen, setPreviewOpen] = useState(false);
@@ -87,12 +86,14 @@ const FormProductManager = ({ isActioning, setIsActioning, setActioningProduct, 
         formData.append('prod_percent', productPercent || actioningProduct.prod_percent);
         formData.append('cpu', cpu || actioningProduct.cpu);
         formData.append('hard_drive', hardDrive || actioningProduct.hard_drive);
+        formData.append('ram', ram || actioningProduct.ram);
         formData.append('screen', screen || actioningProduct.screen);
         formData.append('webcam', webcam || actioningProduct.webcam);
         formData.append('connection', connection || actioningProduct.connection);
         formData.append('prod_weight', prodWeight || actioningProduct.prod_weight);
         formData.append('pin', pin || actioningProduct.pin);
         formData.append('operation_system', operationSystem || actioningProduct.operation_system);
+        formData.append('graphics', graphics || actioningProduct.graphics);
         formData.append('avatar', avatar || actioningProduct.avatar);
         // formData.append('images', fileList);
         fileList.forEach(image => {
@@ -119,12 +120,45 @@ const FormProductManager = ({ isActioning, setIsActioning, setActioningProduct, 
     };
 
     return (
-        <div className='wrap-modal-view w-full'>
+        <div className='wrap-modal-fpm w-full'>
             {actioningProduct &&
-                <Image
-                    src={actioningProduct.avatar}
-                    className='avatar-modal-view max-w-[450px] ml-[15%]'
-                ></Image>
+                <div
+                    className='fpm-wrap-input-file h-[450px] cursor-pointer'
+                    onClick={() => {
+                        let fpmInputFile = document.querySelector(".fpm-input-file")
+                        fpmInputFile.click()
+                    }}
+                    onMouseEnter={() => {
+                        // Add the 'hide-image' class when hovering
+                        document.querySelector('.avatar-modal-view').classList.add('hide-image');
+                    }}
+                    onMouseLeave={() => {
+                        // Remove the 'hide-image' class when not hovering
+                        document.querySelector('.avatar-modal-view').classList.remove('hide-image');
+                    }}
+                >
+                    <div className='fpm-text-hidden absolute text-xl hidden font-bold' >
+                        Click để đổi ảnh đại diện cho sản phẩm
+                    </div>
+                    <img
+                        id='image-preview'
+                        src={actioningProduct.avatar}
+                        className='avatar-modal-view max-w-[450px] object-contain'
+                    ></img>
+                    <Input
+                        className='fpm-input-file mb-2 mt-0' type="file" name="avatar" hidden
+                        onChange={(e) => {
+                            console.log(e.target.files[0])
+                            setAvatar(e.target.files[0])
+                            // Update the image preview here
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                                // Set the preview image source
+                                document.querySelector('.avatar-modal-view').src = event.target.result;
+                            };
+                            reader.readAsDataURL(e.target.files[0]);
+                        }} />
+                </div>
             }
             {actioningProduct &&
                 <div>
@@ -337,20 +371,6 @@ const FormProductManager = ({ isActioning, setIsActioning, setActioningProduct, 
                                     onChange={(e) => {
                                         setGraphics(e.target.value)
                                     }}></Input>
-                                <h3><span className='text-red-500'>* </span>Ảnh đại diện:</h3>
-                                <Input
-                                    className='mb-2 mt-0' type="file" name="avatar"
-                                    onChange={(e) => {
-                                        console.log(e.target.files[0])
-                                        setAvatar(e.target.files[0])
-                                        // Update the image preview here
-                                        const reader = new FileReader();
-                                        reader.onload = (event) => {
-                                            // Set the preview image source
-                                            document.getElementById('image-preview').src = event.target.result;
-                                        };
-                                        reader.readAsDataURL(e.target.files[0]);
-                                    }} />
                                 <Upload
                                     // action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
                                     listType="picture-card"

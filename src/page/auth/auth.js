@@ -60,7 +60,7 @@ const Auth = () => {
                         // localStorage.setItem('isLogin', true);
                         localStorage.setItem('user_name', data.user_name);
                         localStorage.setItem('role', data.role);
-                        Cookies.set('token', data.token, { expires: 1 });
+                        Cookies.set('token', data.token, { expires: 30 });
                         Cookies.remove('tokenGID');
                         window.location.href = data.redirectUrl;
                         // setIncorrectPass(false);

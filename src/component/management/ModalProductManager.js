@@ -1,9 +1,10 @@
 import { Modal } from 'antd';
 import FormProductManager from './FormProductManager';
 import ModalViewDetails from './ModalViewDetails';
+import ContentModalAddNewProduct from './ContentModalAddNewProduct';
 
 const ModalProductManager = ({ title, isActioning, width, setIsActioning, setActioningProduct, actioningProduct, fileList, setFileList, brandDefault,
-    categoryDefault, brands, categories }) => {
+    categoryDefault, brands, categories, brandsSelect, categorySelect }) => {
 
     return (
         <Modal
@@ -12,17 +13,17 @@ const ModalProductManager = ({ title, isActioning, width, setIsActioning, setAct
             width={width}
             onOk={() => {
                 setIsActioning(false);
-                title === 'Chỉnh sửa sản phẩm - ' + actioningProduct.prod_name && setActioningProduct(null);
+                actioningProduct && setActioningProduct(null);
+                fileList && setFileList([])
             }}
             onCancel={() => {
                 setIsActioning(false);
-                title === 'Chỉnh sửa sản phẩm - ' + actioningProduct.prod_name && setActioningProduct(null);
+                actioningProduct && setActioningProduct(null);
+                fileList && setFileList([])
             }}
             footer={null}
         >
-            {
-                console.log(title)}
-            {
+            {actioningProduct ?
                 title === 'Chỉnh sửa sản phẩm - ' + actioningProduct.prod_name ?
                     <FormProductManager
                         isActioning={isActioning}
@@ -35,14 +36,29 @@ const ModalProductManager = ({ title, isActioning, width, setIsActioning, setAct
                         categoryDefault={categoryDefault}
                         brands={brands}
                         categories={categories}
+                        brandsSelect={brandsSelect}
+                        categorySelect={categorySelect}
                     ></FormProductManager>
                     :
+                    title === 'Xem chi tiết sản phẩm - ' + actioningProduct.prod_name &&
                     <ModalViewDetails
                         actioningProduct={actioningProduct}
                         fileList={fileList}
                         brandDefault={brandDefault}
                         categoryDefault={categoryDefault}>
                     </ModalViewDetails>
+                :
+                title === 'Thêm sản phẩm mới' &&
+                <ContentModalAddNewProduct
+                    setIsActioning={setIsActioning}
+                    brands={brands}
+                    categories={categories}
+                    brandsSelect={brandsSelect}
+                    categorySelect={categorySelect}
+                    fileList={fileList}
+                    setFileList={setFileList}
+                ></ContentModalAddNewProduct>
+
             }
         </Modal>
     )

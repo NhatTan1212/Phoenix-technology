@@ -11,6 +11,7 @@ import { text } from '@fortawesome/fontawesome-svg-core';
 import Cookies from 'js-cookie';
 import './orderManagement.scss'
 import Context from '../../../store/Context';
+import { GetOrder, UpdateOrder } from '../../../callAPI/api';
 
 const { Option } = Select;
 
@@ -239,22 +240,11 @@ const OrderManagement = () => {
     }, [searchText, orders]);
 
     const getOrders = () => {
-
-        axios.post('https://phoenixlt.azurewebsites.net/order-management', { token: token }, {
-            headers: {
-                "Content-Type": "application/json",
-            }
+        const reqData = { token: token }
+        GetOrder(reqData).then(response => {
+            console.log(response);
+            setOrders(response)
         })
-            .then(response => {
-                console.log(response.data);
-                setOrders(response.data)
-
-            })
-            .catch(error => {
-                // Xử lý lỗi ở đây
-                console.error('Error fetching data:', error);
-            });
-
     }
 
     const handleChangeInputSearch = (e) => {
@@ -284,21 +274,14 @@ const OrderManagement = () => {
             is_approved: status === 'is_approved' ? 1 : orderEditing.is_approved,
         }
         console.log(statusOrderChanged);
-        axios.post(`https://phoenixlt.azurewebsites.net/order-management/update/${orderEditing.id}`, statusOrderChanged, {
-            headers: {
-                "Content-Type": "application/json",
-            }
+        UpdateOrder(orderEditing.id, statusOrderChanged).then(response => {
+            console.log(response);
+            context.Message("success", "Cập nhật đơn hàng thành công.")
+            setIsEditing(false);
+            setOrderEditing(null);
         })
-            .then(response => {
-                console.log(response.data);
-                context.Message("success", "Cập nhật đơn hàng thành công.")
-                setIsEditing(false);
-                setOrderEditing(null);
-            })
             .catch(error => {
                 context.Message("error", "Đã có lỗi xảy ra khi cập nhật đơn hàng.")
-                // Xử lý lỗi ở đây
-                console.error('Error fetching data:', error);
             });
     };
 
