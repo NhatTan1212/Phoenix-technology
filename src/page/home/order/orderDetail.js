@@ -2,11 +2,12 @@ import { useParams, Link } from 'react-router-dom';
 import React, { useState, useEffect, useContext } from 'react';
 import Cookies from 'js-cookie'; // Import thư viện js-cookie
 import axios from 'axios';
-import { Button, InputNumber, Space, Table, Input, Radio, Row, Select } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import './orderDetail.scss'
 import Instance from '../../../axiosInstance';
+import DeliveryAddressOrderDetail from '../../../component/management/DeliveryAddress';
+import TableOrderDetail from '../../../component/management/TableOrderDetail';
 
 function OrderDetail() {
     const { id } = useParams();
@@ -144,108 +145,15 @@ function OrderDetail() {
                         </div>
                     </div>
                     <div className='bg-[#fff]'>
-                        <h3 className='text-[20px] p-4'>Địa chỉ nhận hàng</h3>
-                        <div className='flex justify-between p-4 pt-0'>
-                            {order ?
-                                <>
-                                    <ul>
-                                        <li>{order.name}</li>
-                                        <li>{order.phone}</li>
-                                        <li>{order.user_address}</li>
-                                    </ul>
-
-                                    <ul>
-                                        {order.user_address === 'Nhận hàng tại cửa hàng'
-                                            ? <li>
-                                                <span>
-                                                    {new Date(order.created_at).toISOString().slice(11, 19)}
-                                                </span>
-                                                <span className='ml-2'>
-                                                    {new Date(order.created_at).toLocaleDateString()}
-                                                </span>
-                                                <span className='ml-3 active-status font-bold'>Đặt hàng thành công</span>
-                                            </li>
-                                            : null}
-                                        {order.is_success === 1 ? <li>Đơn hàng đã hoàn tất</li>
-                                            : null}
-                                        {order.is_transported === 1 ? <li>Đơn hàng đã được giao đến nơi</li>
-                                            : null}
-                                        {order.is_being_shipped === 1 ? <li>
-                                            <span>
-                                                {order.being_shipped_at.slice(11, 19)}
-                                            </span>
-                                            <span className='ml-2'>
-                                                {new Date(order.being_shipped_at).toLocaleDateString()}
-                                            </span>
-                                            <span className='ml-3 active-status font-bold'>
-                                                Đơn hàng đang được giao đến bạn
-                                            </span>
-                                        </li>
-                                            : null}
-                                        {order.is_approved === 1 ? <li>
-                                            <span>
-                                                {order.approved_at.slice(11, 19)}
-                                            </span>
-                                            <span className='ml-2'>
-                                                {new Date(order.approved_at).toLocaleDateString()}
-                                            </span>
-                                            <span className='ml-3 active-status font-bold'>Đơn hàng đã được xác nhận. (Đang chuẩn bị hàng)</span>
-                                        </li>
-                                            : null
-                                        }
-                                        {order.is_payment === 1 ? <li>
-                                            <span>
-                                                {order.paid_at.slice(11, 19)}
-                                            </span>
-                                            <span className='ml-2'>
-                                                {new Date(order.paid_at).toLocaleDateString()}
-                                            </span>
-                                            <span className='ml-3 active-status font-bold'>Đơn hàng đã thanh toán</span>
-                                        </li>
-                                            : null
-                                        }
-                                        {order ? order.created_at ? order.user_address === 'Nhận hàng tại cửa hàng'
-                                            ? null :
-                                            <li>
-                                                <span>
-                                                    {order.created_at.slice(11, 19)}
-                                                </span>
-                                                <span className='ml-2'>
-                                                    {new Date(order.created_at).toLocaleDateString()}
-                                                </span>
-                                                <span className='ml-3 active-status font-bold'>Đặt hàng thành công</span>
-                                            </li>
-                                            : null : null}
-                                    </ul>
-                                </>
-                                : ''
-                            }
-                        </div>
+                        <DeliveryAddressOrderDetail order={order} />
                     </div>
 
                 </div>
                 <div className='bg-[#ffffff] mx-[263px] flex flex-col'>
-                    <Table
-                        className='flex-1 table-order-detail'
+                    <TableOrderDetail
                         columns={columns}
-                        dataSource={dataTable} />
-                    <div className='mb-3'>
-                        <div className='flex justify-between font-bold text-[20px]'>
-                            <span className='pl-5'>Tổng tiền:</span>
-                            <span className='text-[#e5101d] pr-[30px]'>
-                                {order ? order.total ? order.total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }) : '' : ''}
-                            </span>
-
-                        </div>
-                        <div className='flex justify-between'>
-                            <span className='pl-5'>Hình thức thanh toán:</span>
-                            <span className='text-[#000] pr-[30px]'>
-                                {order ? order.total ? order.paymentMethods === 'COD' ? 'Thanh toán tiền mặt khi nhận hàng'
-                                    : 'Thanh toán qua chuyển khoản qua tài khoản ngân hàng' : '' : ''}
-                            </span>
-                        </div>
-
-                    </div>
+                        dataSource={dataTable}
+                        order={order} />
                 </div>
             </div>
         </div >

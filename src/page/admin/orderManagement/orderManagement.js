@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { HomeOutlined, ShoppingOutlined, InboxOutlined, PlusOutlined, } from '@ant-design/icons';
 import {
     Breadcrumb, Space, Input, Button, Table, Modal,
@@ -11,7 +11,10 @@ import { text } from '@fortawesome/fontawesome-svg-core';
 import Cookies from 'js-cookie';
 import './orderManagement.scss'
 import Context from '../../../store/Context';
-import { GetOrder, UpdateOrder } from '../../../callAPI/api';
+import { DeleteOrder, GetOrder, UpdateOrder } from '../../../callAPI/api';
+import Instance from '../../../axiosInstance';
+import DeliveryAddressOrderDetail from '../../../component/management/DeliveryAddress';
+import TableOrderDetail from '../../../component/management/TableOrderDetail';
 
 const { Option } = Select;
 
@@ -22,11 +25,22 @@ const OrderManagement = () => {
     const [orders, setOrders] = useState([]);
     const [searchText, setSearchText] = useState('');
     const [filteredOrders, setFilteredOrders] = useState(orders);
-    const [isViewing, setIsViewing] = useState(orders);
-    const [isEditing, setIsEditing] = useState(orders);
+    const [isViewing, setIsViewing] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
     const [orderEditing, setOrderEditing] = useState(null);
     const [paymentStatus, setPaymentStatus] = useState('');
+    const [order, setOrder] = useState(null);
+    const [orderDetail, setOrderDetail] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [id, setId] = useState([]);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [orderIdToDelete, setOrderIdToDelete] = useState(null);
 
+
+    const dataTable = orderDetail.map((item) => ({
+        ...item,
+        key: item.id
+    }));
     const columns = [
         {
             title: 'Mã đơn hàng',
@@ -206,7 +220,11 @@ const OrderManagement = () => {
                     </button>
                     <button className=' bg-[#c8191f] text-white text-center
                     hover:text-white hover:shadow-[0_0_6px_0_#333] rounded-[30px] 
-                    p-1 px-2 mt-2'>
+                    p-1 px-2 mt-2'
+                        onClick={(e) => {
+                            setOrderIdToDelete(record.id)
+                            setShowDeleteConfirmation(true)
+                        }}>
                         Xóa
                     </button>
                 </div>)
@@ -214,9 +232,66 @@ const OrderManagement = () => {
         },
 
     ];
+    const columnsDetailOrder = [
+        {
+            title: 'Hình sản phẩm',
+            dataIndex: 'avatar',
+            key: 'avatar',
+            render: (_, record) => {
+                const product = products.find((item) => (
+                    item.id === record.product_id
+                ))
+                return (
+                    // console.log("record", record)
+                    <div className='w-[108px]'>
+                        < img
+                            src={product.avatar}
+                            className='w-full h-auto border-[1px] border-[#e1dada]'
+                        ></img >
+
+                    </div>
+                )
+
+            }
+        },
+        {
+            title: 'Miêu tả',
+            dataIndex: 'description',
+            key: 'description',
+            render: (_, record) => {
+                const product = products.find((item) => (
+                    item.id === record.product_id
+                ))
+                return (
+                    <p className='font-bold text-[17px] text-[#333]'>{product.prod_description}</p>
+                )
+
+            }
+        },
+        {
+            title: 'Đơn giá',
+            key: 'price',
+            dataIndex: 'price',
+            render: (_, record) => (
+                <span>{record.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
+            )
+        },
+        {
+            title: 'Số lượng',
+            key: 'quantity',
+            dataIndex: 'quantity',
+            render: (_, record) => (
+                <span>{record.quantity}</span>
+            )
+        },
+    ];
 
     const handleViewOrderDetail = (order) => {
         setIsViewing(true)
+        setOrder(order)
+        setId(order.id)
+        console.log(order.id);
+
     }
 
     const handleEditOrder = (order) => {
@@ -232,8 +307,8 @@ const OrderManagement = () => {
     useEffect(() => {
         // Hàm này chạy khi component được mount
         getOrders();
-
-    }, [searchText, isEditing]);
+        getorderDetail()
+    }, [searchText, isEditing, isViewing, showDeleteConfirmation]);
 
     useEffect(() => {
         filterOrders();
@@ -247,6 +322,21 @@ const OrderManagement = () => {
         })
     }
 
+    const getorderDetail = () => {
+
+        Instance.get(`/orderdetails/${id}`)
+            .then(response => {
+                console.log(response.data);
+                setOrderDetail(response.data.orderDetails);
+                setProducts(response.data.dataProduct)
+                // console.log(productDetail)
+            })
+            .catch(error => {
+                // Handle errors here
+                console.error('Error fetching data:', error);
+            });
+
+    }
     const handleChangeInputSearch = (e) => {
         setSearchText(e.target.value)
 
@@ -299,13 +389,30 @@ const OrderManagement = () => {
         }
     }
 
+    const handleDeleteOrder = (order_id) => {
+
+        const requestData = {
+            token: token,
+            order_id: order_id,
+        };
+
+        DeleteOrder(requestData).then(response => {
+            if (response.success) {
+                context.Message("success", "Xóa order thành công.")
+
+            }
+        })
+    }
+
 
     return (
-        <div className='flex'>
+        <div className='flex-1'>
             <Modal
                 title='Chi tiết đơn hàng'
                 open={isViewing === true}
+                footer={null}
                 width={1200}
+                className='modal-order-management-view-detail'
                 onOk={() => {
                     // Handle save logic here
                     setIsViewing(false);
@@ -314,7 +421,42 @@ const OrderManagement = () => {
                 onCancel={() => {
                     setIsViewing(false);
                     setOrderEditing(null); // Clear the editingProduct when closing the modal
-                }}></Modal>
+                }}>
+                <div className='pl-4'>
+                    <span>Mã đơn hàng: {order ? order.id : 'N/A'}</span>
+                    <span className='mx-4'>|</span>
+                    <span className='text-[#ed1d24] uppercase font-bold'>
+                        {order ? order.user_address === 'Nhận hàng tại cửa hàng' ? 'Đặt hàng thành công'
+                            : order.is_success === 1 ? 'Đơn hàng đã hoàn tất'
+                                : order.is_transported === 1 ? 'Đơn hàng đã được giao đến nơi'
+                                    : order.is_being_shipped === 1 ? 'Đơn hàng đang được giao đến bạn'
+                                        : order.is_approved === 1 ? 'Đơn hàng đã được xác nhận. (Đang chuẩn bị hàng)'
+                                            : 'Đang chờ phê duyệt' : ''
+                        }</span>
+
+                </div>
+                <div className='bg-[#fff]'>
+                    <DeliveryAddressOrderDetail order={order} />
+                    <div className='bg-[#ffffff] flex flex-col'>
+                        <TableOrderDetail
+                            columns={columnsDetailOrder}
+                            dataSource={dataTable}
+                            order={order} />
+                    </div>
+                </div>
+            </Modal>
+            <Modal
+                title="Xác nhận xóa sản phẩm"
+                open={showDeleteConfirmation}
+                onOk={() => {
+                    handleDeleteOrder(orderIdToDelete); // Gọi hàm xóa sau khi xác nhận
+                    setShowDeleteConfirmation(false); // Đóng modal
+                }}
+                onCancel={() => setShowDeleteConfirmation(false)} // Đóng modal khi bấm hủy
+                className='model-cart'
+            >
+                <p>Bạn có chắc chắn muốn xóa sản phẩm khỏi cửa hàng?</p>
+            </Modal>
             <Modal
                 className='edit-modal-orderManagement'
                 title={`Cập nhật đơn hàng - ${orderEditing ? orderEditing.id : null}`}
@@ -381,7 +523,7 @@ const OrderManagement = () => {
                     </Form.Item>
                 </Form>
             </Modal>
-            <AdminHome></AdminHome>
+            {/* <AdminHome></AdminHome> */}
             <div className='bg-[#f0f0f0] flex-1 p-3'>
                 <Breadcrumb
                     items={[
@@ -414,7 +556,7 @@ const OrderManagement = () => {
                             +
                         </span>
                         <span>
-                            Thêm sản phẩm
+                            Thêm đơn hàng
                         </span>
                     </Button>
                 </div>

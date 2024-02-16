@@ -274,8 +274,8 @@ const ProductManagement = () => {
 
 
     return (
-        <div className='flex'>
-            <AdminHome></AdminHome>
+        <div className='flex-1'>
+            {/* <AdminHome></AdminHome> */}
             <Modal
                 title="Xác nhận xóa sản phẩm"
                 open={showDeleteConfirmation}
@@ -288,7 +288,7 @@ const ProductManagement = () => {
             >
                 <p>Bạn có chắc chắn muốn xóa sản phẩm khỏi cửa hàng?</p>
             </Modal>
-            <div className='bg-[#f0f0f0] flex-1 p-3'>
+            <div className='bg-[#f0f0f0] p-3'>
                 <Breadcrumb
                     items={[
                         {

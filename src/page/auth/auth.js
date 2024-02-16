@@ -62,6 +62,7 @@ const Auth = () => {
                         localStorage.setItem('role', data.role);
                         Cookies.set('token', data.token, { expires: 30 });
                         Cookies.remove('tokenGID');
+                        console.log((data.redirectUrl));
                         window.location.href = data.redirectUrl;
                         // setIncorrectPass(false);
                     } else {

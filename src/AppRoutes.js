@@ -23,36 +23,17 @@ import AllProduct from './page/home/AllProduct/AllProduct';
 
 
 function AppRoutes() {
-
-    const [isAdmin, setIsAdmin] = useState(false)
-
     useEffect(() => {
         let token = Cookies.get('token')
         let tokenGID = Cookies.get('tokenGID')
-        // console.log(token)
-        if (token || tokenGID) {
-            try {
-                if (token) {
-                    const decodedToken = jwtDecode(token);
-                    if (decodedToken.role == 'admin') {
-                        setIsAdmin(true)
-                    }
-                }
-            } catch (error) {
-                console.error('Lỗi khi giải mã token:', error);
-            }
-        }
+        console.log(token)
+        if (token || tokenGID) { }
         else {
             const guestId = uuidv4();
             Cookies.set('tokenGID', guestId, { expires: 31 })
             console.log(guestId)
         }
-    }, [isAdmin])
-
-    function AccessDeniedMessage() {
-        return <div className='mt-4 font-bold'>Bạn không đủ quyền truy cập vào đường dẫn này!</div>;
-    }
-
+    }, [])
     return (
         <>
             <Routes>
@@ -69,23 +50,7 @@ function AppRoutes() {
                 <Route path="/order" element={<><Order /></>} />
                 <Route path="/order-detail/:id" element={<><OrderDetail /></>} />
                 {/*---Management---*/}
-                {isAdmin ?
-                    <>
-                        <Route path="/management" element={<><AdminHome /></>} />
-                        <Route path="/management/user" element={<><AdminHome /></>} />
-                        <Route path="/management/category" element={<><AdminHome /></>} />
-                        <Route path="/management/product" element={<><ProductManagement /></>} />
-                        <Route path="/management/order" element={<><OrderManagement /></>} />
-                    </> :
-                    <>
-                        <Route path="/management" element={<AccessDeniedMessage />} />
-                        <Route path="/management/user" element={<AccessDeniedMessage />} />
-                        <Route path="/management/category" element={<AccessDeniedMessage />} />
-                        <Route path="/management/product" element={<AccessDeniedMessage />} />
-                        <Route path="/management/order" element={<AccessDeniedMessage />} />
-                    </>
-                }
-
+                <Route path="/management" element={<><AdminHome /></>} />
             </Routes>
         </>
     );

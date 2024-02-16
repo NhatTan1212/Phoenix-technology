@@ -1,5 +1,4 @@
 // api.js
-import axios from 'axios';
 import Instance from '../axiosInstance';
 
 const GetProducts = () => {
@@ -116,7 +115,19 @@ const UpdateOrder = (orderId, reqData) => {
         });
 }
 
+const DeleteOrder = (requestData) => {
+    return Instance.post('/deleteorder', requestData, {
+        headers: {
+            "Content-Type": "application/json",
+        }
+    })
+        .then(response => response.data)
+        .catch(error => {
+            console.error('Loi call api DeleteOrder:', error);
+        });
+}
+
 export {
     GetProducts, GetBrands, GetLaptopGaming, GetProductsByQuery, GetCategories, GetImages,
-    EditProduct, AddNewProduct, DeleteProduct, GetOrder, UpdateOrder
+    EditProduct, AddNewProduct, DeleteProduct, GetOrder, UpdateOrder, DeleteOrder
 };
