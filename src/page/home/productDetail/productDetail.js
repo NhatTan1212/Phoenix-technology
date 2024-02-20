@@ -29,6 +29,7 @@ const ProductDetail = () => {
     const isCartChange = context.isCartChange
     const setIsCartChange = context.setIsCartChange
     const [productDetail, setProductDetail] = useState({});
+    const [dataProductDetail, setDataProductDetail] = useState(null);
     const { id } = useParams(); // Lấy tham số từ URL
     const [images, setImages] = useState([]);
     const [buyQuantity, setBuyQuantity] = useState('1');
@@ -136,6 +137,7 @@ const ProductDetail = () => {
     }
     const viewDetailsProduct = () => {
         setIsViewDetailsOpened(true)
+        setDataProductDetail(productDetail.data)
         const getBrand = brands.find((brand) => {
             return brand.brand_id === productDetail.data.brand_id
 
@@ -158,7 +160,8 @@ const ProductDetail = () => {
                     isActioning={isViewDetailsOpened}
                     width={800}
                     setIsActioning={setIsViewDetailsOpened}
-                    actioningProduct={productDetail.data}
+                    actioningProduct={dataProductDetail}
+                    setActioningProduct={setDataProductDetail}
                     fileList={images}
                     setFileList={setImages}
                     brandDefault={brandDefault}

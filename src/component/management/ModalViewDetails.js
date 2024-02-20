@@ -9,7 +9,7 @@ const ModalViewDetails = ({ actioningProduct, fileList, brandDefault,
 
     return (
         <div className='wrap-modal-view w-full'>
-            {console.log(fileList)}
+            {/* {console.log(fileList)} */}
             <div className='relative min-h-[450px]'>
                 <Image
                     src={actioningProduct.avatar}

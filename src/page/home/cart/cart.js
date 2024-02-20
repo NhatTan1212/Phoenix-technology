@@ -1,15 +1,36 @@
 import React, { useState, useEffect, useContext } from 'react';
 import Context from '../../../store/Context';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie'; // Import thư viện js-cookie
 import axios from 'axios';
 import { Button, InputNumber, Space, Table, Input, Radio, Row, Select, Modal } from 'antd';
 import './cart.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
+import { faCircleCheck, faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import Instance from '../../../axiosInstance';
+import CryptoJS from 'crypto-js';
+import qs from 'qs';
+
+
+function sortObject(obj) {
+    let sorted = {};
+    let str = [];
+    let key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            str.push(encodeURIComponent(key));
+        }
+    }
+    str.sort();
+    for (key = 0; key < str.length; key++) {
+        sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
+    }
+    return sorted;
+}
 
 function Cart() {
+    const navigate = useNavigate();
     const token = Cookies.get('token');
     const tokenGID = Cookies.get('tokenGID');
     const context = useContext(Context)
@@ -19,6 +40,7 @@ function Cart() {
     const [sum, setSum] = useState(0);
     const [valueRadioReceive, setValueRadioReceive] = useState("Giao hàng tận nơi");
     const [valueRadioPay, setValueRadioPay] = useState("COD");
+    const [valueRadioLanguage, setValueRadioLanguage] = useState("vn");
     const [detailAddress, setDetailAddress] = useState("");
     const [optionsSelectProvince, setOptionsSelectProvince] = useState(null)
     const [optionsSelectDistricts, setOptionsSelectDistricts] = useState(null)
@@ -35,7 +57,12 @@ function Cart() {
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [productIdToDelete, setProductIdToDelete] = useState(null);
 
-    // console.log(context)
+    //Xử lý VNPAY
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const [vnpayStatus, setVnpayStatus] = useState(null);
+    let secureHash = ''
+
     const addClassCSS = () => {
         //add class antd input
         const antInput = document.querySelector('.ant-input')
@@ -110,6 +137,7 @@ function Cart() {
         ...item,
         key: item.id
     }));
+
 
     const handleQuantityChange = (productId, newQuantity) => {
         const updatedCart = cart.map(item => {
@@ -190,6 +218,41 @@ function Cart() {
         const newSum = cart.reduce((accumulator, item) => accumulator + item.product_total, 0);
         setSum(newSum);
     }, [cart]);
+
+    useEffect(() => {
+        if (queryParams.has('vnp_ResponseCode')) {
+            // Thực hiện xử lý dựa trên ResponseCode từ VNPAY
+            let objParams = Object.fromEntries(queryParams);
+            let newObjParams = { ...objParams };
+            delete newObjParams['vnp_SecureHash'];
+            const responseCode = queryParams.get('vnp_ResponseCode');
+            const secureHash = queryParams.get('vnp_SecureHash');
+            console.log(secureHash);
+            const sortedParams = sortObject(newObjParams);
+            console.log(sortedParams);
+            const tmnCode = process.env.REACT_APP_VNP_TMNCODE
+            const secretKey = process.env.REACT_APP_VNP_HASHSECRET
+            const signData = qs.stringify(sortedParams, { encode: false });
+            console.log(signData);
+            const hmac = CryptoJS.HmacSHA512(signData, secretKey);
+            const signed = hmac.toString(CryptoJS.enc.Hex);
+            console.log(signData, secretKey);
+            console.log(signed);
+            console.log(secureHash);
+            if (signed === secureHash) {
+                if (responseCode === '00') {
+                    // Thanh toán thành công
+                    setVnpayStatus('success');
+                } else {
+                    // Thanh toán thất bại
+                    setVnpayStatus('failed');
+                }
+
+            } else {
+                setVnpayStatus('failed');
+            }
+        }
+    }, [location]);
 
     const getDiaGioiHanhChinhVN = () => {
         var Parameter = {
@@ -333,20 +396,53 @@ function Cart() {
             listProduct: listProduct,
             avatar: cart[0].avatar
         }
-        console.log(dataOder)
-        Instance.post('/dataorder', dataOder, {
-            headers: {
-                "Content-Type": "application/json",
+        if (valueRadioPay === 'VNPAY') {
+            if (valueRadioLanguage === 'vn' || valueRadioLanguage === '' || valueRadioLanguage === null) {
+                dataOder['language'] = 'vn'
+                dataOder['amount'] = sum
+                dataOder['bankCode'] = 'VNBANK'
+            } else {
+                dataOder['language'] = 'en'
+                dataOder['amount'] = sum
+                dataOder['bankCode'] = 'VNBANK'
             }
-        })
-            .then(response => {
-                context.Message("success", "Quý khách đã đặt hàng thành công.")
+        }
+        console.log(dataOder)
+        if (valueRadioPay !== 'VNPAY') {
+            Instance.post('/dataorder', dataOder, {
+                headers: {
+                    "Content-Type": "application/json",
+                }
             })
-            .catch(error => {
-                console.error('Error updating cart:', error);
-                context.Message("error", "Đã có lỗi xảy ra khi đặt hàng.")
+                .then(response => {
+                    context.Message("success", "Quý khách đã đặt hàng thành công.")
+                })
+                .catch(error => {
+                    console.error('Error updating cart:', error);
+                    context.Message("error", "Đã có lỗi xảy ra khi đặt hàng.")
 
-            });
+                });
+        }
+        else {
+            Instance.post('/create_payment_url', dataOder, {
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+                .then(response => {
+                    console.log(response);
+                    if (response.data.success) {
+                        context.Message("success", "Quý khách đã đặt hàng thành công.")
+                        // navigate(response.data.redirect)
+                        window.open(response.data.redirect, "_blank");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating cart:', error);
+                    context.Message("error", "Đã có lỗi xảy ra khi đặt hàng.")
+
+                });
+        }
         setListProduct([])
     }
 
@@ -364,6 +460,50 @@ function Cart() {
                 className='model-cart'
             >
                 <p>Bạn có chắc chắn muốn xóa sản phẩm khỏi giỏ hàng?</p>
+            </Modal>
+            <Modal
+                title="Thông tin thanh toán"
+                open={vnpayStatus}
+                width={700}
+                onOk={() => {
+                    setVnpayStatus(null)
+                }}
+                onCancel={() => setVnpayStatus(null)} // Đóng modal khi bấm hủy
+                className='model-payment-status'
+                footer={null}
+            >
+                {
+                    vnpayStatus === 'success'
+                        ?
+                        <>
+                            <FontAwesomeIcon
+                                className='text-[#4ea722] text-[40px]'
+                                icon={faCircleCheck}></FontAwesomeIcon>
+                            <p className='text-[#e5101d] text-[20px]'>Đơn hàng của quý khách đã thanh toán thành công!</p>
+                            <ul>
+                                <li>Tên người nhận: {customerName}</li>
+                                <li>Email người nhận: {customerEmail}</li>
+                                <li>Số điện thoại người nhận: {customerPhone}</li>
+                                <li>Địa chỉ nhận hàng: {detailAddress + ', ' + wardSelected + ', ' + districtSelected + ', ' + provinceSelected}</li>
+                                <li>Tổng số tiền đã thanh toán: {queryParams.get('vnp_Amount')}</li>
+                                <li>Phương thức thanh toán: Thanh toán qua ATM-Tài khoản ngân hàng nội địa (VNPAY)</li>
+                            </ul>
+                            <div>
+                                <Button className='mr-2'>Tiếp tục mua hàng</Button>
+                                <Button className='ml-2'>Xem chi tiết đơn hàng</Button>
+                            </div>
+                        </>
+                        :
+                        <>
+                            <FontAwesomeIcon
+                                className='text-[#e5101d] text-[40px]'
+                                icon={faCircleXmark}></FontAwesomeIcon>
+                            <p className='text-[] text-[20px]'>Đơn hàng của quý khách thanh toán không thành công!</p>
+                            <div>
+                                <Button className='ml-2'>Quay lại</Button>
+                            </div>
+                        </>
+                }
             </Modal>
             <div className='w-10/12  mx-[auto] '>
                 <Link to={'/'} className='flex items-center mx-[263px] mb-3'>
@@ -511,9 +651,14 @@ function Cart() {
                             >
                                 <Row className='flex flex-col justify-start'>
                                     <Radio
-                                        value={"COD"}>Thanh toán tiền mặt khi nhận hàng (COD)</Radio>
+                                        value={"COD"}>Thanh toán tiền mặt khi nhận hàng (COD)
+                                    </Radio>
                                     <Radio
-                                        value={"Bank"}>Thanh toán qua chuyển khoản qua tài khoản ngân hàng (khuyên dùng)</Radio>
+                                        value={"BANK"}>Thanh toán qua chuyển khoản qua tài khoản ngân hàng (khuyên dùng)
+                                    </Radio>
+                                    <Radio
+                                        value={"VNPAY"}>Thanh toán qua ATM-Tài khoản ngân hàng nội địa (VNPAY)
+                                    </Radio>
                                 </Row>
                             </Radio.Group>
                             {
@@ -523,15 +668,40 @@ function Cart() {
                             border-[1px] border-[#d4d4d4]'>Quý khách sẽ thanh toán bằng tiền mặt
                                         khi nhận hàng. Vui lòng bấm nút " Đặt hàng" để hoàn tất.
                                     </p>
-                                    :
-                                    <p className='flex flex-col px-5 py-7 bg-[#f8f8f8] text-[15px]
+                                    : valueRadioPay === 'VNPAY'
+                                        ? <div className='px-5 py-7 bg-[#f8f8f8] text-[15px]
+                                        border-[1px] border-[#d4d4d4]'>
+                                            <p >Quý khách sẽ thanh toán qua ATM - Tài khoản ngân hàng nội địa.<br></br>
+                                                Vui lòng chọn ngôn ngữ hiển thị trong quá trình thanh toán.
+                                            </p>
+                                            <Radio.Group
+                                                className='my-3'
+                                                onChange={(e) => {
+                                                    console.log("radio checked", e.target.value);
+                                                    setValueRadioLanguage(e.target.value);
+                                                }}
+                                                value={valueRadioLanguage}
+                                                style={{ width: "100%" }}
+                                            >
+                                                <Row className='flex flex-col justify-start'>
+                                                    <Radio
+                                                        value={"vn"}>Tiếng việt
+                                                    </Radio>
+                                                    <Radio
+                                                        value={"end"}>Tiếng anh
+                                                    </Radio>
+                                                </Row>
+                                            </Radio.Group>
+                                        </div>
+                                        :
+                                        <p className='flex flex-col px-5 py-7 bg-[#f8f8f8] text-[15px]
                                 border-[1px] border-[#d4d4d4]'>
-                                        <span>
-                                            HO NHAT TAN - Ngân Hàng Ngoại Thương Việt Nam (Vietcombank) - CN Quảng Nam STK: 1014391411
+                                            <span>
+                                                HO NHAT TAN - Ngân Hàng Ngoại Thương Việt Nam (Vietcombank) - CN Quảng Nam STK: 1014391411
 
-                                        </span>
-                                        <span>Vui lòng bấm nút "Đặt hàng" để hoàn tất. Hoặc liên hệ Hotline: 0359.973.209 để được tư vấn.</span>
-                                    </p>
+                                            </span>
+                                            <span>Vui lòng bấm nút "Đặt hàng" để hoàn tất. Hoặc liên hệ Hotline: 0359.973.209 để được tư vấn.</span>
+                                        </p>
                             }
                         </div>
                         <div className='flex items-center justify-between'>

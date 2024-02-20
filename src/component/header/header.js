@@ -119,7 +119,7 @@ function Header() {
     const getCart = () => {
         const token = Cookies.get('token');
         const tokenGID = Cookies.get('tokenGID');
-        console.log(token, tokenGID);
+        // console.log(token, tokenGID);
 
         if (token !== undefined) {
             Instance.post('/cart', { token }, {
@@ -128,7 +128,7 @@ function Header() {
                 }
             })
                 .then(response => {
-                    console.log(response);
+                    // console.log(response);
                     setCart(response.data.length)
                 })
                 .catch(error => {
@@ -142,7 +142,7 @@ function Header() {
                 }
             })
                 .then(response => {
-                    console.log(response);
+                    // console.log(response);
                     setCart(response.data.length)
                 })
                 .catch(error => {

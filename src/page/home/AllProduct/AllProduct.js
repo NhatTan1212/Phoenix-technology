@@ -21,6 +21,7 @@ function AllProduct() {
     const { query } = useParams(); // Lấy tham số từ URL
     const [isCheckedAllBrands, setIsCheckedAllBrands] = useState(false)
     const [isCheckedAllCategories, setIsCheckedAllCategories] = useState(false)
+    const [sortStatus, setSortStatus] = useState(null)
 
 
 
@@ -28,8 +29,9 @@ function AllProduct() {
         getBrands();
         getCategories();
         getProductsByQuery();
-        console.log(query);
+        getSortSelected();
         setCheckBoxSelected();
+        console.log(query);
     }, [query]);
     const setCheckBoxSelected = () => {
         if (query === 'allproduct') {
@@ -83,6 +85,17 @@ function AllProduct() {
                 }
 
             }
+        }
+    }
+
+    const getSortSelected = () => {
+        // console.log(query);
+        if (query.includes('sort=gia-thap-den-cao')) {
+            setSortStatus('asc')
+        } else if (query.includes('sort=gia-cao-den-thap')) {
+            setSortStatus('desc')
+        } else {
+            setSortStatus(null)
         }
     }
 
@@ -298,21 +311,32 @@ function AllProduct() {
                         <div className='flex'>
                             <span className='my-4 px-3 py-1 ml-0 pl-0 '>Ưu tiên xem:</span>
                             <span
-                                className='my-4 mx-0 px-3 py-1 border-[1px] border-[#bababa]
-                            bg-[#cb1c22] text-white rounded-l-md'
+                                className={
+                                    sortStatus === null
+                                        ? ('my-4 mx-0 px-3 py-1 border-[1px] border-[#bababa] bg-[#cb1c22] text-white rounded-l-md')
+                                        : ('my-4 mx-0 px-3 py-1 border-[1px] border-[#bababa] text-black rounded-l-md')
+                                }
                                 onClick={() => { handleChangeSort() }}
                             >
                                 Mới nhập
                             </span>
                             <span
-                                className='my-4 mx-0 px-3 py-1 border-[1px] border-[#bababa] border-l-0'
+                                className={
+                                    sortStatus === 'desc'
+                                        ? ('my-4 mx-0 px-3 py-1 border-[1px] border-[#bababa] bg-[#cb1c22] text-white border-l-0')
+                                        : ('my-4 mx-0 px-3 py-1 border-[1px] border-[#bababa] border-l-0')
+                                }
                                 onClick={() => { handleChangeSort('desc') }}
                             >
                                 Giá cao
                             </span>
                             <span
-                                className='my-4 mx-0 px-3 py-1 border-[1px] border-[#bababa] border-l-0
-                            rounded-r-md'
+                                className=
+                                {
+                                    sortStatus === 'asc'
+                                        ? 'my-4 mx-0 px-3 py-1 border-[1px] border-[#bababa] bg-[#cb1c22] text-white border-l-0 rounded-r-md'
+                                        : 'my-4 mx-0 px-3 py-1 border-[1px] border-[#bababa] border-l-0 rounded-r-md'
+                                }
                                 onClick={() => { handleChangeSort('asc') }}
                             >
                                 Giá thấp

@@ -204,7 +204,7 @@ const OrderManagement = () => {
                     hover:text-white hover:shadow-[0_0_6px_0_#333] rounded-[30px] 
                     p-1 px-2'
                         onClick={(e) => {
-                            console.log(record)
+                            // console.log(record)
                             handleViewOrderDetail(record)
                         }}>
                         Xem chi tiết
@@ -213,7 +213,7 @@ const OrderManagement = () => {
                     hover:text-white hover:shadow-[0_0_6px_0_#333] rounded-[30px] 
                     p-1 px-2 mt-2'
                         onClick={(e) => {
-                            console.log(record)
+                            // console.log(record)
                             handleEditOrder(record)
                         }}>
                         Chỉnh sửa
@@ -290,13 +290,13 @@ const OrderManagement = () => {
         setIsViewing(true)
         setOrder(order)
         setId(order.id)
-        console.log(order.id);
+        // console.log(order.id);
 
     }
 
     const handleEditOrder = (order) => {
         setIsEditing(true)
-        console.log(order)
+        // console.log(order)
         setOrderEditing(order)
         form.setFieldsValue({
             paymentStatus: order.is_payment === 0 ? 'Chưa thanh toán' : 'Đã thanh toán',
@@ -317,7 +317,7 @@ const OrderManagement = () => {
     const getOrders = () => {
         const reqData = { token: token }
         GetOrder(reqData).then(response => {
-            console.log(response);
+            // console.log(response);
             setOrders(response)
         })
     }
@@ -326,7 +326,7 @@ const OrderManagement = () => {
 
         Instance.get(`/orderdetails/${id}`)
             .then(response => {
-                console.log(response.data);
+                // console.log(response.data);
                 setOrderDetail(response.data.orderDetails);
                 setProducts(response.data.dataProduct)
                 // console.log(productDetail)

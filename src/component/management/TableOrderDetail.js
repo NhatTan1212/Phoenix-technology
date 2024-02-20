@@ -3,7 +3,7 @@ import { Table } from 'antd';
 const TableOrderDetail = ({ columns, dataSource, order }) => {
     return (
         <>
-            {console.log(order)}
+            {/* {console.log(order)} */}
             <Table
                 className='flex-1 table-order-detail'
                 columns={columns}

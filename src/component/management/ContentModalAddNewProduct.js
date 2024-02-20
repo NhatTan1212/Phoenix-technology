@@ -64,9 +64,9 @@ const ContentModalAddNewProduct = ({ isActioning, setIsActioning, setActioningPr
     };
 
     const handleChange = ({ fileList: newFileList }, fileListPost) => {
-        console.log(newFileList)
+        // console.log(newFileList)
         // console.log("flp", fileListPost)
-        console.log({ fileList: newFileList })
+        // console.log({ fileList: newFileList })
         setFileList(newFileList)
     };
 
@@ -100,7 +100,7 @@ const ContentModalAddNewProduct = ({ isActioning, setIsActioning, setActioningPr
                 formData.append('images', image.originFileObj);
             }
             else {
-                console.log(image)
+                // console.log(image)
                 formData.append('images', image.url);
                 formData.append('image_id', image.image_id);
 
@@ -108,7 +108,7 @@ const ContentModalAddNewProduct = ({ isActioning, setIsActioning, setActioningPr
         });
 
         AddNewProduct(formData).then(response => {
-            console.log(response);
+            // console.log(response);
             if (response.success) {
                 setIsActioning(false);
                 context.Message("success", "Cập nhật sản phẩm thành công.")
@@ -140,7 +140,7 @@ const ContentModalAddNewProduct = ({ isActioning, setIsActioning, setActioningPr
                 <Input
                     className='fpm-input-file mb-2 mt-0' type="file" name="avatar" hidden
                     onChange={(e) => {
-                        console.log(e.target.files[0])
+                        // console.log(e.target.files[0])
                         setAvatar(e.target.files[0])
                         // Update the image preview here
                         const reader = new FileReader();

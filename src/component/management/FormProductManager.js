@@ -64,9 +64,9 @@ const FormProductManager = ({ isActioning, setIsActioning, setActioningProduct, 
     };
 
     const handleChange = ({ fileList: newFileList }, fileListPost) => {
-        console.log(newFileList)
+        // console.log(newFileList)
         // console.log("flp", fileListPost)
-        console.log({ fileList: newFileList })
+        // console.log({ fileList: newFileList })
         setFileList(newFileList)
     };
 
@@ -101,7 +101,7 @@ const FormProductManager = ({ isActioning, setIsActioning, setActioningProduct, 
                 formData.append('images', image.originFileObj);
             }
             else {
-                console.log(image)
+                // console.log(image)
                 formData.append('images', image.url);
                 formData.append('image_id', image.image_id);
 
@@ -109,7 +109,7 @@ const FormProductManager = ({ isActioning, setIsActioning, setActioningProduct, 
         });
 
         EditProduct(formData).then(response => {
-            console.log(response);
+            // console.log(response);
             if (response.success) {
                 setIsActioning(false);
                 setActioningProduct(null);
@@ -148,7 +148,7 @@ const FormProductManager = ({ isActioning, setIsActioning, setActioningProduct, 
                     <Input
                         className='fpm-input-file mb-2 mt-0' type="file" name="avatar" hidden
                         onChange={(e) => {
-                            console.log(e.target.files[0])
+                            // console.log(e.target.files[0])
                             setAvatar(e.target.files[0])
                             // Update the image preview here
                             const reader = new FileReader();

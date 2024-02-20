@@ -128,7 +128,7 @@ const ProductManagement = () => {
                     hover:text-white hover:shadow-[0_0_6px_0_#333] rounded-[30px] 
                     p-1 px-2 mt-2'
                         onClick={(e) => {
-                            console.log(record);
+                            // console.log(record);
                             setProductIdToDelete(record.id)
                             setShowDeleteConfirmation(true)
                         }}>
@@ -196,12 +196,12 @@ const ProductManagement = () => {
         setBrandDefault(getBrand.name)
 
         const getImages = images.filter((img) => {
-            console.log(img.product_id)
+            // console.log(img.product_id)
             return img.product_id === product.id
 
         });
-        console.log(product.id)
-        console.log(getImages)
+        // console.log(product.id)
+        // console.log(getImages)
         setFileList(getImages)
 
         const getCategory = categories.find((category) => {
@@ -223,12 +223,12 @@ const ProductManagement = () => {
         setBrandDefault(getBrand.name)
 
         const getImages = images.filter((img) => {
-            console.log(img.product_id)
+            // console.log(img.product_id)
             return img.product_id === product.id
 
         });
-        console.log(product.id)
-        console.log(getImages)
+        // console.log(product.id)
+        // console.log(getImages)
         setFileList(getImages)
 
         const getCategory = categories.find((category) => {

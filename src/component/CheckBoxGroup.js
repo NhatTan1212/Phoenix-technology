@@ -18,7 +18,6 @@ function CheckBoxGroup({ tittle, nameDisplay, checkedList, handleCheckboxChange,
                     value={checkedList} onChange={(e) => handleCheckboxChange(e)}
                 >
                     <Row>
-                        {console.log(type.map((data) => (data.slug)))}
                         {tittle === 'Hãng sản xuất' ? type.map((data) => (
                             <Col span={12} className='my-1'>
                                 {/* <Link to={`../laptop/brand=${checkedListToString}`}> */}

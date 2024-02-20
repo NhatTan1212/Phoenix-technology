@@ -18,12 +18,12 @@ const AdminHome = () => {
 
     useEffect(() => {
         let token = Cookies.get('token')
-        console.log(token)
+        // console.log(token)
         if (token) {
             const decodedToken = jwtDecode(token);
             if (decodedToken.role == 'admin') {
                 setIsAdmin(true)
-                console.log('hi');
+                // console.log('hi');
             } else {
                 setIsAdmin(false)
             }
@@ -37,7 +37,7 @@ const AdminHome = () => {
     }
 
     const handleMenu = (e) => {
-        console.log(e)
+        // console.log(e)
         setCurrent(e.key);
     }
     return (

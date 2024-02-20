@@ -13,7 +13,6 @@ const formatPriceWithCommas = (price) => {
 
 const renderListProduct = (product, brands) => {
     const brand = brands.find(brand => brand.brand_id === product.brand_id);
-    // console.log(brand)
     return (
 
         <Card.Grid style={gridStyle} key={product.id}
