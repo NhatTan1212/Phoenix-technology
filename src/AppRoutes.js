@@ -27,14 +27,16 @@ function AppRoutes() {
     const { param } = useParams();
     const location = useLocation();
     useEffect(() => {
-        const queryParams = new URLSearchParams(location.search);
-        const username = queryParams.get('username');
         // if()
-        if (username)
-            console.log(username);
-        localStorage.setItem('user_name', username);
         let token = Cookies.get('token')
         let tokenGID = Cookies.get('tokenGID')
+        const queryParams = new URLSearchParams(location.search);
+        const username = queryParams.get('username');
+        if (username) {
+            localStorage.setItem('user_name', username);
+            Cookies.remove('tokenGID');
+        }
+        console.log(username);
         console.log(token);
         if (token || tokenGID) { }
         else {
