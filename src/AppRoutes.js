@@ -31,12 +31,18 @@ function AppRoutes() {
         let token = Cookies.get('token')
         let tokenGID = Cookies.get('tokenGID')
         const queryParams = new URLSearchParams(location.search);
+        const tokenParam = queryParams.get('token');
         const username = queryParams.get('username');
-        if (username) {
+        console.log(tokenParam);
+        console.log(username);
+        if (tokenParam) {
             localStorage.setItem('user_name', username);
+            Cookies.set('token', tokenParam, { expires: 31 })
             Cookies.remove('tokenGID');
         }
-        console.log(username);
+        if (token) {
+            if (tokenGID) Cookies.remove('tokenGID');
+        }
         console.log(token);
         if (token || tokenGID) { }
         else {
