@@ -1,13 +1,13 @@
 /* Add a black background color to the top navigation */
 .header {
   background-color: #000;
-  display: flex;
-  flex-direction: column;
+  // display: flex;
+  // flex-direction: column;
   .topnav {
     display: flex;
     justify-content: space-between;
     margin: 0 auto;
-    // width: 86%;
+    width: 86%;
     .topnav-left{
       width: 67%;
       display: flex;
@@ -142,4 +142,52 @@
     }
   }
   
-  
+
+.header-input-search .ant-btn{
+  background-color: #df1b21 !important;
+  color: white !important;
+  font-weight: bold;
+  line-height: 10px;
+}
+.header-input-search .ant-btn:hover{
+  border-color: white !important;
+  background-color: #bb1a20 !important;
+}
+@media (min-width: 1650px) {
+  .header-wrap {
+    width: 1650px;
+  }
+}
+
+@media (min-width: 1650px) {
+  .menu-header {
+    width: 1650px;
+  }
+}
+@media (max-width: 992px) {
+  .header-wrapnav-right{
+    justify-content: end;
+  }
+  #header-wrap-login{
+    display: none !important;
+  }
+  #header-search-autocp{
+    display: none !important;
+  }
+  .menu-header #menu{
+    display: none !important;
+  }
+  .header-autocpl{
+    display: block !important;
+  }
+}
+@media (max-width: 545) {
+   .ant-select-dropdown{
+    max-width: 300px;
+  }
+}
+// @media (min-width: 768) {
+//   .header-wrap {
+//     width: 750;
+//   }
+// }

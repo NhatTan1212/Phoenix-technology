@@ -3,17 +3,23 @@ import {
     Input, Select, Image, Row, Col, Upload
 } from 'antd';
 import '../../component/management/ModalViewDetails.scss'
+import Context from '../../store/Context';
 
 const ModalViewDetails = ({ actioningProduct, fileList, brandDefault,
     categoryDefault }) => {
+    const context = useContext(Context)
+    const isHiddenAutoCpl = context.isHiddenAutoCpl
+    const isScreenSmaller1280 = context.isScreenSmaller1280
+    const isScreenSmaller430 = context.isScreenSmaller430
 
     return (
         <div className='wrap-modal-view w-full'>
             {/* {console.log(fileList)} */}
-            <div className='relative min-h-[450px]'>
+            <div className='relative min-h-[450px] overflow-hidden'>
                 <Image
                     src={actioningProduct.avatar}
-                    className='avatar-modal-view max-w-[450px] ml-[15%] object-contain'
+                    className={`avatar-modal-view max-w-[450px] object-contain ml-[5%] sm:ml-[15%] md:ml-[25%] lg:ml-[15%]
+                    ${isHiddenAutoCpl ? '' : '-translate-x-[60px]'} `}
                 ></Image>
 
                 <Image.PreviewGroup
@@ -91,6 +97,46 @@ const ModalViewDetails = ({ actioningProduct, fileList, brandDefault,
                                         <span>{' ' + actioningProduct.cpu.split(',')[2]}</span>
                                     </li>
                                 }
+                                {
+                                    actioningProduct.cpu.split(',')[3] &&
+                                    <li className='pb-1'>
+                                        <span className='text-red-500'>* </span>
+                                        Tốc độ CPU:
+                                        <span>{' ' + actioningProduct.cpu.split(',')[3]}</span>
+                                    </li>
+                                }
+                                {
+                                    actioningProduct.cpu.split(',')[4] &&
+                                    <li className='pb-1'>
+                                        <span className='text-red-500'>* </span>
+                                        Tốc độ tối đa:
+                                        <span>{' ' + actioningProduct.cpu.split(',')[4]}</span>
+                                    </li>
+                                }
+                                {
+                                    actioningProduct.cpu.split(',')[5] &&
+                                    <li className='pb-1'>
+                                        <span className='text-red-500'>* </span>
+                                        Số nhân:
+                                        <span>{' ' + actioningProduct.cpu.split(',')[5]}</span>
+                                    </li>
+                                }
+                                {
+                                    actioningProduct.cpu.split(',')[6] &&
+                                    <li className='pb-1'>
+                                        <span className='text-red-500'>* </span>
+                                        Số luồng:
+                                        <span>{' ' + actioningProduct.cpu.split(',')[6]}</span>
+                                    </li>
+                                }
+                                {
+                                    actioningProduct.cpu.split(',')[7] &&
+                                    <li className='pb-1'>
+                                        <span className='text-red-500'>* </span>
+                                        Bộ nhớ đệm:
+                                        <span>{' ' + actioningProduct.cpu.split(',')[7]}</span>
+                                    </li>
+                                }
                             </ul>
                             <h3 className='font-bold text-[16px] text-[#464646] bg-[#f8f9fa] py-1'>RAM</h3>
                             <ul>
@@ -113,7 +159,7 @@ const ModalViewDetails = ({ actioningProduct, fileList, brandDefault,
                                 {actioningProduct.ram.split(',')[2] &&
                                     <li className='pb-1'>
                                         <span className='text-red-500'>* </span>
-                                        Số khe cắm rời:
+                                        Tốc độ RAM:
                                         <span>{' ' + actioningProduct.ram.split(',')[2]}</span>
                                     </li>
                                 }
@@ -121,7 +167,7 @@ const ModalViewDetails = ({ actioningProduct, fileList, brandDefault,
                                 {actioningProduct.ram.split(',')[3] &&
                                     <li className='pb-1'>
                                         <span className='text-red-500'>* </span>
-                                        Số khe RAM còn lại:
+                                        Số khe cắm rời:
                                         <span>{' ' + actioningProduct.ram.split(',')[3]}</span>
                                     </li>
                                 }
@@ -129,7 +175,7 @@ const ModalViewDetails = ({ actioningProduct, fileList, brandDefault,
                                 {actioningProduct.ram.split(',')[4] &&
                                     <li className='pb-1'>
                                         <span className='text-red-500'>* </span>
-                                        Số RAM onboard:
+                                        Số khe RAM còn lại:
                                         <span>{' ' + actioningProduct.ram.split(',')[4]}</span>
                                     </li>
                                 }
@@ -137,8 +183,16 @@ const ModalViewDetails = ({ actioningProduct, fileList, brandDefault,
                                 {actioningProduct.ram.split(',')[5] &&
                                     <li className='pb-1'>
                                         <span className='text-red-500'>* </span>
-                                        Hỗ trợ RAM tối đa:
+                                        Số RAM onboard:
                                         <span>{' ' + actioningProduct.ram.split(',')[5]}</span>
+                                    </li>
+                                }
+
+                                {actioningProduct.ram.split(',')[6] &&
+                                    <li className='pb-1'>
+                                        <span className='text-red-500'>* </span>
+                                        Hỗ trợ RAM tối đa:
+                                        <span>{' ' + actioningProduct.ram.split(',')[6]}</span>
                                     </li>
                                 }
 
@@ -153,48 +207,135 @@ const ModalViewDetails = ({ actioningProduct, fileList, brandDefault,
                             </ul>
                             <h3 className='font-bold text-[16px] text-[#464646] bg-[#f8f9fa] py-1'>Lưu trữ</h3>
                             <ul>
-                                <li className='pb-1'>
-                                    <span className='text-red-500'>* </span>
-                                    Ổ cứng:
-                                    <span>
-                                        {' ' + actioningProduct.hard_drive}
-                                    </span>
-                                </li>
-                            </ul>
-                            <h3 className='font-bold text-[16px] text-[#464646] bg-[#f8f9fa] py-1'>Đồ họa</h3>
-                            <ul className='flex w-full'>
-                                <li className='w-1/2'>
+                                <li className='pb-1 flex flex-col'>
+                                    <div>
+                                        <span className='text-red-500'>* </span>
+                                        Kiểu ổ cứng:
+                                        <span>
+                                            {' ' + actioningProduct.hard_drive.split(',')[0]}
+                                        </span>
+                                    </div>
+                                    {actioningProduct.hard_drive.split(',')[3] &&
+                                        <div>
+                                            <span className='text-red-500'>* </span>
+                                            Tổng số khe cắm SSD/HDD:
+                                            <span>
+                                                {' ' + actioningProduct.hard_drive.split(',')[3]}
+                                            </span>
+                                        </div>
+                                    }
+                                    {actioningProduct.hard_drive.split(',')[4] &&
+                                        <div>
+                                            <span className='text-red-500'>* </span>
+                                            Số khe SSD/HDD còn lại:
+                                            <span>
+                                                {' ' + actioningProduct.hard_drive.split(',')[4]}
+                                            </span>
+                                        </div>
+                                    }
                                     <table className='border-[1px] border-[solid] w-full'>
                                         <thead className='w-full'>
-                                            <th className='p-2 border-b-[1px] w-1/2'>Card rời</th>
+                                            <th className='p-2 border-b-[1px] w-1/2'>{actioningProduct.hard_drive.split(',')[0]}</th>
                                             <th className='p-2 border-b-[1px] w-1/2'></th>
                                         </thead>
                                         <tbody>
                                             {
-                                                actioningProduct.graphics.split(',')[0] &&
+                                                actioningProduct.hard_drive.split(',')[1] !== '' &&
                                                 <tr className=''>
                                                     <td className='p-2 border-b-[1px]'>
-                                                        Model
+                                                        Loại SSD
                                                     </td>
                                                     <td className='p-2 border-b-[1px]'>
-                                                        {actioningProduct.graphics.split(',')[0]}
+                                                        {actioningProduct.hard_drive.split(',')[1]}
                                                     </td>
                                                 </tr>
                                             }
                                             {
-                                                actioningProduct.graphics.split(',')[1] &&
+                                                actioningProduct.hard_drive.split(',')[2] &&
                                                 <tr className=''>
-                                                    <td className='p-2 border-b-[1px]'>Bộ nhớ</td>
+                                                    <td className='p-2 border-b-[1px]'>Dung lượng</td>
                                                     <td className='p-2 border-b-[1px]'>
-                                                        {actioningProduct.graphics.split(',')[1]}
+                                                        {actioningProduct.hard_drive.split(',')[2]}
                                                     </td>
                                                 </tr>
                                             }
 
+
                                         </tbody>
                                     </table>
                                 </li>
-                                <li></li>
+                            </ul>
+                            <h3 className='font-bold text-[16px] text-[#464646] bg-[#f8f9fa] py-1'>Đồ họa</h3>
+                            <ul className='flex w-full'>
+                                <li className='w-1/2 pr-2'>
+                                    {
+                                        (actioningProduct.graphics !== null && actioningProduct.graphics !== ''
+                                            && actioningProduct.graphics !== ' ' && actioningProduct.graphics !== "null") &&
+                                        <table className='border-[1px] border-[solid] w-full'>
+                                            <thead className='w-full'>
+                                                <th className='p-2 border-b-[1px] w-1/2'>Card rời</th>
+                                                <th className='p-2 border-b-[1px] w-1/2'></th>
+                                            </thead>
+                                            <tbody>
+                                                {
+                                                    actioningProduct.graphics.split(',')[0] &&
+                                                    <tr className=''>
+                                                        <td className='p-2 border-b-[1px]'>
+                                                            Model
+                                                        </td>
+                                                        <td className='p-2 border-b-[1px]'>
+                                                            {actioningProduct.graphics.split(',')[0]}
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                {
+                                                    actioningProduct.graphics.split(',')[1] &&
+                                                    <tr className=''>
+                                                        <td className='p-2 border-b-[1px]'>Bộ nhớ</td>
+                                                        <td className='p-2 border-b-[1px]'>
+                                                            {actioningProduct.graphics.split(',')[1]}
+                                                        </td>
+                                                    </tr>
+                                                }
+
+                                            </tbody>
+                                        </table>
+                                    }
+                                </li>
+                                <li className='w-1/2 pl-2'>
+                                    {
+                                        (actioningProduct.on_board !== null && actioningProduct.on_board !== '' && actioningProduct.on_board !== "null") &&
+                                        <table className='border-[1px] border-[solid] w-full'>
+                                            <thead className='w-full'>
+                                                <th className='p-2 border-b-[1px] w-1/2'>Card tích hợp</th>
+                                                <th className='p-2 border-b-[1px] w-1/2'></th>
+                                            </thead>
+                                            <tbody>
+                                                {
+                                                    actioningProduct.on_board.split(',')[0] &&
+                                                    <tr className=''>
+                                                        <td className='p-2 border-b-[1px]'>
+                                                            Model
+                                                        </td>
+                                                        <td className='p-2 border-b-[1px]'>
+                                                            {actioningProduct.on_board.split(',')[0]}
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                {
+                                                    actioningProduct.on_board.split(',')[1] &&
+                                                    <tr className=''>
+                                                        <td className='p-2 border-b-[1px]'>Bộ nhớ</td>
+                                                        <td className='p-2 border-b-[1px]'>
+                                                            {actioningProduct.on_board.split(',')[1]}
+                                                        </td>
+                                                    </tr>
+                                                }
+
+                                            </tbody>
+                                        </table>
+                                    }
+                                </li>
                             </ul>
                             <h3 className='font-bold text-[16px] text-[#464646] bg-[#f8f9fa] py-1'>Giao tiếp & Kết nối</h3>
                             <ul>

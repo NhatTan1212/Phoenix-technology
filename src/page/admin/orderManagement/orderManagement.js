@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEye } from '@fortawesome/free-regular-svg-icons';
+import { faTrash, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { useParams, Link } from 'react-router-dom';
 import { HomeOutlined, ShoppingOutlined, InboxOutlined, PlusOutlined, } from '@ant-design/icons';
 import {
     Breadcrumb, Space, Input, Button, Table, Modal,
-    Form, Select,
+    Form, Select, Row, Col,
 } from 'antd';
 import AdminHome from '../adminHome';
 import axios, { AxiosHeaders } from 'axios';
@@ -20,6 +23,10 @@ const { Option } = Select;
 
 const OrderManagement = () => {
     const context = useContext(Context)
+    const isHiddenAutoCpl = context.isHiddenAutoCpl
+    const isScreenSmaller1280 = context.isScreenSmaller1280
+    const isScreenSmaller430 = context.isScreenSmaller430
+
     const [form] = Form.useForm();
     const token = Cookies.get('token');
     const [orders, setOrders] = useState([]);
@@ -37,28 +44,47 @@ const OrderManagement = () => {
     const [orderIdToDelete, setOrderIdToDelete] = useState(null);
 
 
+
+
     const dataTable = orderDetail.map((item) => ({
         ...item,
         key: item.id
     }));
+    const OrderStatusCpn = ({ record }) => {
+        const matchedOrder = orders.find(item => item.id === record.id);
+
+        return matchedOrder ? (
+            <div className='text-[#26aa5f] font-bold'>
+                {matchedOrder.user_address === 'Nhận hàng tại cửa hàng' ? 'Đặt hàng thành công'
+                    : matchedOrder.is_success === 1 ? 'Đơn hàng đã hoàn tất'
+                        : matchedOrder.is_transported ? 'Đơn hàng đã được giao đến nơi'
+                            : matchedOrder.is_being_shipped ? 'Đơn hàng đang được giao đến bạn'
+                                : matchedOrder.is_approved ? 'Đơn hàng đã được xác nhận. (Đang chuẩn bị hàng)'
+                                    : 'Đang chờ phê duyệt'
+                }
+            </div>
+        ) : null;
+    }
     const columns = [
         {
             title: 'Mã đơn hàng',
             dataIndex: 'id',
             key: 'id',
+            width: '10%',
             sorter: (record1, record2) => { return record1.id - record2.id }
         },
         {
             title: 'Hình sản phẩm',
             dataIndex: 'avatar',
             key: 'avatar',
+            // sortDirections: ["descend", "ascend"],
+            // responsive: ["xxl"],
             render: (_, record) => (
-                <div className='avatar w-[108px]'>
-                    < img
+                <div className='avatar w-[108px] '>
+                    <img
                         src={record.avatar}
-                        className='w-full h-auto border-[1px] border-[#e1dada]'
-                    ></img >
-
+                        className='w-full h-auto border-[1px] border-[#e1dada] '
+                    />
                 </div>
             )
         },
@@ -66,14 +92,20 @@ const OrderManagement = () => {
             title: 'Tổng tiền',
             key: 'total',
             dataIndex: 'total',
+            sortDirections: ["descend", "ascend"],
+            responsive: ["xxl"],
             render: (_, record) => (
                 <span>{record.total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
-            )
+            ),
+            sorter: (record1, record2) => { return record1.total - record2.total }
         },
         {
             title: 'Địa chỉ nhận hàng',
             key: 'user_address',
             dataIndex: 'user_address',
+            render: (_, record) => {
+                return <div className=' max-h-[5em] min-w-[210px] max-[1366px]:min-w-[180px] overflow-hidden'>{record.user_address}</div>
+            }
         },
         {
             title: 'Hình thức thanh toán',
@@ -83,22 +115,28 @@ const OrderManagement = () => {
                 let paymentMethod;
                 if (record.paymentMethods === 'COD') {
                     paymentMethod = 'Thanh toán khi nhận hàng'
-                } else if (record.paymentMethods === 'Bank') {
+                } else if (record.paymentMethods === 'BANK') {
                     paymentMethod = 'Thanh toán qua tài khoản ngân hàng'
+                } else {
+                    paymentMethod = 'ATM-Tài khoản ngân hàng nội địa (VNPAY)'
                 }
-                return (<div>
+                return (<div className='min-w-[117px]'>
                     {paymentMethod}
                 </div>)
             },
             filters: [
                 {
                     text: 'Thanh toán qua tài khoản ngân hàng',
-                    value: 'Bank'
+                    value: 'BANK'
                 },
                 {
                     text: 'Thanh toán khi nhận hàng',
                     value: 'COD'
-                }
+                },
+                {
+                    text: 'ATM-Tài khoản ngân hàng nội địa (VNPAY)',
+                    value: 'Credit Card'
+                },
 
             ]
             ,
@@ -110,19 +148,7 @@ const OrderManagement = () => {
             title: 'Trạng thái đơn hàng',
             key: 'order_status',
             render: (_, record) => {
-                const matchedOrder = orders.find(item => item.id === record.id);
-
-                return matchedOrder ? (
-                    <div>
-                        {matchedOrder.user_address === 'Nhận hàng tại cửa hàng' ? 'Đặt hàng thành công'
-                            : matchedOrder.is_success === 1 ? 'Đơn hàng đã hoàn tất'
-                                : matchedOrder.is_transported ? 'Đơn hàng đã được giao đến nơi'
-                                    : matchedOrder.is_being_shipped ? 'Đơn hàng đang được giao đến bạn'
-                                        : matchedOrder.is_approved ? 'Đơn hàng đã được xác nhận. (Đang chuẩn bị hàng)'
-                                            : 'Đang chờ phê duyệt'
-                        }
-                    </div>
-                ) : null;
+                return <OrderStatusCpn record={record} />
             },
             filters: [
                 { text: 'Đang chờ phê duyệt', value: 'is_pending_approval' },
@@ -187,6 +213,9 @@ const OrderManagement = () => {
             title: 'Ngày đặt',
             key: 'created_at',
             dataIndex: 'created_at',
+            sortDirections: ["descend", "ascend"],
+            responsive: ["xxl"],
+            sorter: (record1, record2) => { return record1.id - record2.id },
             render: (text, record) => {
                 const date = new Date(record.created_at).toLocaleDateString();
                 const time = new Date(record.created_at).toISOString().slice(11, 19);
@@ -202,30 +231,30 @@ const OrderManagement = () => {
                 return (<div className='flex flex-col h-auto'>
                     <button className=' bg-[#c8191f] text-white text-center
                     hover:text-white hover:shadow-[0_0_6px_0_#333] rounded-[30px] 
-                    p-1 px-2'
+                    p-1 px-2 w-[97px] max-[1281px]:w-[auto] '
                         onClick={(e) => {
                             // console.log(record)
                             handleViewOrderDetail(record)
                         }}>
-                        Xem chi tiết
+                        {!isScreenSmaller1280 ? 'Xem chi tiết' : <FontAwesomeIcon className='min-w-[60px]' icon={faEye} />}
                     </button>
                     <button className=' bg-[#c8191f] text-white text-center
                     hover:text-white hover:shadow-[0_0_6px_0_#333] rounded-[30px] 
-                    p-1 px-2 mt-2'
+                    p-1 px-2 mt-2 w-[97px] max-[1281px]:w-[auto]'
                         onClick={(e) => {
                             // console.log(record)
                             handleEditOrder(record)
                         }}>
-                        Chỉnh sửa
+                        {!isScreenSmaller1280 ? 'Chỉnh sửa' : <FontAwesomeIcon icon={faPenToSquare} />}
                     </button>
                     <button className=' bg-[#c8191f] text-white text-center
                     hover:text-white hover:shadow-[0_0_6px_0_#333] rounded-[30px] 
-                    p-1 px-2 mt-2'
+                    p-1 px-2 mt-2 w-[97px] max-[1281px]:w-[auto]'
                         onClick={(e) => {
                             setOrderIdToDelete(record.id)
                             setShowDeleteConfirmation(true)
                         }}>
-                        Xóa
+                        {!isScreenSmaller1280 ? 'Xóa' : <FontAwesomeIcon icon={faTrash} />}
                     </button>
                 </div>)
             }
@@ -286,6 +315,139 @@ const OrderManagement = () => {
         },
     ];
 
+    const deviceColumns = [
+        {
+            title: 'Thông tin sản phẩm',
+            render: (record, key, index) => {
+                return (
+                    <div className=''>
+                        <Row className=''>
+                            <Col sm={{ span: 12 }} xs={{ span: 24 }}
+                            >
+                                <div className='pb-2 '>Mã đơn hàng: {record.id}</div>
+
+                            </Col>
+                            <Col sm={{ span: 12 }} xs={{ span: 24 }}
+                                className='text-end max-sm:text-start'>
+                                <OrderStatusCpn record={record} />
+
+                            </Col>
+                        </Row>
+                        <Row className='overflow-hidden text-ellipsis max-[470px]:max-w-[300px]'>
+                            <Col
+                                className='max-[490px]:max-w-full pr-3'>
+
+                                <div
+                                    className='w-[108px]'
+                                >
+                                    < img
+                                        src={record.avatar}
+                                        className='w-full h-auto border-[1px] border-[#e1dada]'
+                                    ></img >
+
+                                </div>
+                            </Col>
+                            <Col
+                                className=''
+                            >
+
+                                <p className='font-bold text-[17px] text-[#333] max-h-[3em] overflow-hidden max-w-[330px] text-ellipsis
+                                max-[525px]:max-w-[200px]'>
+                                    {record.prod_name}
+                                </p>
+                                <p>x{record.quantity}</p>
+
+                            </Col>
+
+                        </Row>
+                        <div className='pt-2 flex justify-between max-sm:flex-col'>
+                            <p>Tổng sản phẩm: {record.total_product}</p>
+                            <p >
+                                <span>
+                                    Tổng tiền:
+                                </span>
+                                <span className='text-[#e5101ec4] font-semibold'>
+                                    {' ' + record.total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                )
+            }
+        },
+        {
+            title: 'Hành động',
+            key: 'action',
+            dataIndex: 'action',
+            width: '15%',
+            render: (text, record) => {
+                return (<div className='flex flex-col h-auto'>
+                    <button className=' bg-[#c8191f] text-white text-center
+                    hover:text-white hover:shadow-[0_0_6px_0_#333] rounded-[30px] 
+                    p-1 px-2 min-w-[60px]  '
+                        onClick={(e) => {
+                            // console.log(record)
+                            handleViewOrderDetail(record)
+                        }}>
+                        {!isScreenSmaller1280 ? 'Xem chi tiết' : <FontAwesomeIcon icon={faEye} />}
+                    </button>
+                    <button className=' bg-[#c8191f] text-white text-center
+                    hover:text-white hover:shadow-[0_0_6px_0_#333] rounded-[30px] 
+                    p-1 px-2 mt-2 min-w-[60px] '
+                        onClick={(e) => {
+                            // console.log(record)
+                            handleEditOrder(record)
+                        }}>
+                        {!isScreenSmaller1280 ? 'Chỉnh sửa' : <FontAwesomeIcon icon={faPenToSquare} />}
+                    </button>
+                    <button className=' bg-[#c8191f] text-white text-center
+                    hover:text-white hover:shadow-[0_0_6px_0_#333] rounded-[30px] 
+                    p-1 px-2 mt-2 min-w-[60px] '
+                        onClick={(e) => {
+                            setOrderIdToDelete(record.id)
+                            setShowDeleteConfirmation(true)
+                        }}>
+                        {!isScreenSmaller1280 ? 'Xóa' : <FontAwesomeIcon icon={faTrash} />}
+                    </button>
+                </div>)
+            }
+        },
+    ];
+
+    const deviceColumnsOrderDetails = [
+        {
+            title: 'Danh sách sản phẩm',
+            render: (_, record) => {
+                const product = products.find((item) => (
+                    item.id === record.product_id
+                ))
+                return (
+                    // console.log("record", record)
+                    <div >
+                        <div className='flex max-[650px]:flex-col'>
+                            <div className='mr-4 w-[108px] min-w-[108px]'>
+                                < img
+                                    src={product.avatar}
+                                    className='w-full h-auto border-[1px] border-[#e1dada]'
+                                ></img >
+                            </div>
+                            <p className='font-bold text-[17px] text-[#333]   max-[470px]:max-w-[300px]'>{product.prod_description}</p>
+
+                        </div>
+                        <div className='flex justify-between'>
+                            <span className='ml-[124px] max-[650px]:mx-0'>x{record.quantity}</span>
+                            <span>{record.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
+
+                        </div>
+                    </div>
+                )
+
+            }
+        },
+    ];
+
+
+
     const handleViewOrderDetail = (order) => {
         setIsViewing(true)
         setOrder(order)
@@ -307,7 +469,7 @@ const OrderManagement = () => {
     useEffect(() => {
         // Hàm này chạy khi component được mount
         getOrders();
-        getorderDetail()
+        if (isViewing) getorderDetail()
     }, [searchText, isEditing, isViewing, showDeleteConfirmation]);
 
     useEffect(() => {
@@ -347,7 +509,7 @@ const OrderManagement = () => {
             const orderId = order.id + '';
             return orderId.includes(searchText);
         });
-        console.log(orders, filteredOrders)
+        // console.log(orders, filteredOrders)
         setFilteredOrders(filteredOrders);
     }
 
@@ -439,7 +601,7 @@ const OrderManagement = () => {
                     <DeliveryAddressOrderDetail order={order} />
                     <div className='bg-[#ffffff] flex flex-col'>
                         <TableOrderDetail
-                            columns={columnsDetailOrder}
+                            columns={isHiddenAutoCpl ? columnsDetailOrder : deviceColumnsOrderDetails}
                             dataSource={dataTable}
                             order={order} />
                     </div>
@@ -540,17 +702,17 @@ const OrderManagement = () => {
                         },
                     ]}
                 />
-                <div className='flex justify-between bg-white items-center p-4'>
+                <div className={`flex justify-between bg-white items-center  ${isHiddenAutoCpl ? 'p-4' : 'flex-col-reverse p-0'}`}>
 
                     <Input.Search
                         allowClear
-                        className='searchPM'
+                        className={`searchPM ${isHiddenAutoCpl ? '' : 'w-full pt-2'}`}
                         placeholder='Nhập mã đơn hàng, từ khóa cần tìm kiếm,...'
                         onSearch={(e) => { console.log('hi') }}
                         onChange={(e) => { handleChangeInputSearch(e) }}
                         onPressEnter={(e) => { console.log('hi') }}
-                        style={{ width: '20%' }}></Input.Search>
-                    <Button className='btn-add-prd bg-[#c8191f] text-white 
+                        style={{ width: '45%' }}></Input.Search>
+                    {/* <Button className='btn-add-prd bg-[#c8191f] text-white 
                     h-auto'>
                         <span className='font-bold text-[18px] mr-2'>
                             +
@@ -558,14 +720,14 @@ const OrderManagement = () => {
                         <span>
                             Thêm đơn hàng
                         </span>
-                    </Button>
+                    </Button> */}
                 </div>
                 <div className='flex flex-col bg-white p-4
                 mt-[20px]'>
                     <h3>Quản lý đơn hàng</h3>
                     <Table
                         className='table-order-management'
-                        columns={columns}
+                        columns={!isScreenSmaller1280 ? columns : deviceColumns}
                         dataSource={filteredOrders.map((order) => ({
                             ...order,
                             key: order.id

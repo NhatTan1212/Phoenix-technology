@@ -12,7 +12,7 @@ const ResetPassword = () => {
     const [isSendMailFail, setIsSendEmailFail] = useState(false);
 
     const handleConfirm = () => {
-        const regexEmail = /^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/;
+        const regexEmail = /^[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/;
 
         if (email === '') {
             setIsSendEmailFail(true)

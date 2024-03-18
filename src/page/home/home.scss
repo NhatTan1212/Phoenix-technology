@@ -1,0 +1,24 @@
+// .home-grid-card{
+//     width: calc(20% - 20px); 
+//     gap: 20px;
+//     }
+@media (max-width: 1280px) {
+    .home-grid-card{
+        width: 25% !important;
+        
+    }
+   
+  }
+  @media (max-width: 992px) {
+    .home-grid-card{
+        width: 50% !important;
+        
+    }
+   
+  }
+
+  @media (min-width: 1650px) {
+    .home-wrap-content {
+      width: 1650px;
+    }
+  }

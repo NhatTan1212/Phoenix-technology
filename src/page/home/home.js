@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { Carousel, Card } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -6,6 +6,8 @@ import { faCartFlatbed, faUser, faBars } from '@fortawesome/free-solid-svg-icons
 import Cookies from 'js-cookie'; // Import thư viện js-cookie
 import axios from 'axios';
 import Instance from '../../axiosInstance';
+import Context from '../../store/Context';
+import './home.scss'
 
 const gridStyle = {
     width: '20%',
@@ -13,6 +15,10 @@ const gridStyle = {
 };
 
 function Home() {
+    const context = useContext(Context)
+    const isHiddenAutoCpl = context.isHiddenAutoCpl
+    const isScreenSmaller1280 = context.isScreenSmaller1280
+    const isScreenSmaller430 = context.isScreenSmaller430
 
     const [products, setProducts] = useState([])
     const [laptopGaming, setLaptopGaming] = useState([])
@@ -24,7 +30,7 @@ function Home() {
         getProducts();
         getLaptopGaming();
         getBrands();
-    }, []);
+    }, [isScreenSmaller1280]);
 
     const getProducts = async () => {
         await Instance.get('/home')
@@ -73,7 +79,7 @@ function Home() {
         return (
 
             <Card.Grid style={gridStyle} key={product.id}
-                className='relative'>
+                className='relative home-grid-card min-h-[470px]'>
                 <div className='absolute top-[15px] right-[15px] 
                 z-[2]'>
                     <span
@@ -85,7 +91,7 @@ function Home() {
                         -{product.prod_percent}%
                     </span>
                 </div>
-                <div className='flex overflow-hidden items-center h-[60%]'>
+                <div className='flex overflow-hidden items-center h-auto min-h-[60%]'>
                     <Link to={`/product-detail/${product.id}`}
                         className=''>
                         <img src={product.avatar} alt=''
@@ -95,11 +101,14 @@ function Home() {
 
                 </div>
                 <div className='flex justify-start text-start 
-            items-start h-[40%] flex-col '>
-                    {brand && <img src={brand.image} alt="Brand Logo"
-                        className="brand-logo max-w-[80px]" />}
-                    <Link className=' text-[16px] line-clamp-2 font-bold 
-                    overflow-hidden mt-[25px]'>
+            items-start h-auto flex-col overflow-hidden text-ellipsis'>
+                    {
+                        brand &&
+                        <img src={brand.image} alt="Brand Logo"
+                            className="brand-logo max-w-[80px] min-h-[36px]" />}
+                    <Link to={`/product-detail/${product.id}`}
+                        className=' text-[16px] font-bold max-[700px]:text-[14px]
+                    overflow-hidden mt-[25px] max-w-full text-ellipsis line-clamp-2'>
                         {product.prod_description}
                     </Link>
                     <span className='text-[#1d1d1d] text-[16px] 
@@ -118,7 +127,7 @@ function Home() {
 
     return (
         <div className='bg-[#f0f0f0]'>
-            <div className='banner w-full'>
+            <div className={`${!isHiddenAutoCpl ? 'hidden' : ''} banner w-full`}>
                 <Carousel
                     autoplay
                     pauseOnDotsHover
@@ -126,42 +135,66 @@ function Home() {
                     draggable
                 >
                     <div>
-                        <img src='http://localhost:8000/upload/banner2.png'></img>
+                        <img
+                            className='min-h-[406.58px]'
+                            src='http://localhost:8000/upload/banner2.png'></img>
                     </div>
                     <div>
-                        <img src='http://localhost:8000/upload/banner1.jpg'></img>
+                        <img
+                            className='min-h-[406.58px]'
+                            src='http://localhost:8000/upload/banner1.jpg'></img>
                     </div>
                     <div>
-                        <img src='http://localhost:8000/upload/banner3.png'></img>
+                        <img
+                            className='min-h-[406.58px]'
+                            src='http://localhost:8000/upload/banner3.png'></img>
                     </div>
                 </Carousel>
             </div>
-            <div className='pb-[30px]'>
-                <div className='w-10/12 m-auto'>
+            <div className='pb-[30px] home-wrap-content m-auto'>
+                <div className={` ${(!isHiddenAutoCpl && !isScreenSmaller430) ? 'mx-6' : ''} ${isScreenSmaller430 ? 'mx-0' : 'mx-[30px]'}`}>
                     <div className='flex justify-between items-center
-                    border-b-[2px] border-[#c8191f]  mt-[30px]'>
-                        <h2 className='px-[10px] py-[10px] bg-[#c8191f] text-white
-                    inline-block font-bold text-[20px] rounded-t-[10px]'
-                        >SẢN PHẨM KHUYẾN MÃI HOT NHẤT</h2>
+                    border-b-[2px] border-[#c8191f]  pt-[30px]'>
+                        <h2 className={` bg-[#c8191f] text-white
+                    inline-block font-bold  rounded-t-[10px] ${!isHiddenAutoCpl ? 'text-[16px] px-[8px] py-[8px]' : 'text-[20px] px-[10px] py-[10px]'}`}
+                        >
+                            {!isHiddenAutoCpl ? 'KHUYẾN MÃI HOT NHẤT' : 'SẢN PHẨM KHUYẾN MÃI HOT NHẤT'}
+                        </h2>
                         <Link
-                            to={'/laptop/allproduct'}
+                            to={'/laptop?page=1'} //từ em thử cái
                             className='font-bold text-[#c8191f]'>{"xem tất cả >>"}</Link>
                     </div>
                     <Card className=' w-[100%] h-auto'>
-                        {hotSaleProducts.map(renderListProduct)}
+                        {
+                            !isHiddenAutoCpl ?
+                                hotSaleProducts.slice(0, 2).map(renderListProduct)
+                                :
+                                isScreenSmaller1280 ?
+                                    hotSaleProducts.slice(0, 4).map(renderListProduct)
+                                    :
+                                    hotSaleProducts.map(renderListProduct)
+                        }
                     </Card>
 
                     <div className='flex justify-between items-center
                     border-b-[2px] border-[#c8191f]  mt-[30px]'>
-                        <h2 className='px-[10px] py-[10px] bg-[#c8191f] text-white
-                    inline-block font-bold text-[20px] rounded-t-[10px]'
+                        <h2 className={` bg-[#c8191f] text-white
+                    inline-block font-bold  rounded-t-[10px] ${!isHiddenAutoCpl ? 'text-[16px] px-[8px] py-[8px]' : 'text-[20px] px-[10px] py-[10px]'}`}
                         >Laptop Gaming</h2>
                         <Link
-                            to={'/laptop/category=laptop-gaming'}
+                            to={'/laptop/category=laptop-gaming&page=1'}
                             className='font-bold text-[#c8191f]'>{"xem tất cả >>"}</Link>
                     </div>
                     <Card className=' w-[100%] h-auto'>
-                        {laptopGaming.slice(0, 5).map(renderListProduct)}
+                        {
+                            !isHiddenAutoCpl ?
+                                laptopGaming.slice(0, 2).map(renderListProduct)
+                                :
+                                isScreenSmaller1280 ?
+                                    laptopGaming.slice(0, 4).map(renderListProduct)
+                                    :
+                                    laptopGaming.slice(0, 5).map(renderListProduct)
+                        }
                     </Card>
 
                     <div className='mt-[30px]'>

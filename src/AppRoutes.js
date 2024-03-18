@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useParams, useLocation } from 'react-router-dom';
 import ProductDetail from './page/home/productDetail/productDetail';
 import Auth from './page/auth/auth';
 import SignUp from './page/auth/SignUp';
@@ -18,14 +18,24 @@ import OrderDetail from './page/home/order/orderDetail';
 import OrderManagement from './page/admin/orderManagement/orderManagement';
 import AllProduct from './page/home/AllProduct/AllProduct';
 import RedirectAllProduct from './component/redirectAllProduct';
+import ProfileManager from './page/home/profile/profileManager';
 
 
 
 function AppRoutes() {
     const navigate = useNavigate()
+    const { param } = useParams();
+    const location = useLocation();
     useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const username = queryParams.get('username');
+        // if()
+        if (username)
+            console.log(username);
+        localStorage.setItem('user_name', username);
         let token = Cookies.get('token')
         let tokenGID = Cookies.get('tokenGID')
+        console.log(token);
         if (token || tokenGID) { }
         else {
             const guestId = uuidv4();
@@ -48,6 +58,7 @@ function AppRoutes() {
                 <Route path="/cart" element={<><Cart /></>} />
                 <Route path="/order" element={<><Order /></>} />
                 <Route path="/order-detail/:id" element={<><OrderDetail /></>} />
+                <Route path="/profile/:id" element={<><ProfileManager /></>} />
                 {/*---Management---*/}
                 <Route path="/management" element={<><AdminHome /></>} />
             </Routes>

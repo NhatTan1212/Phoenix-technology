@@ -1,13 +1,14 @@
 import { Modal } from 'antd';
 import FormProductManager from './FormProductManager';
-import ModalViewDetails from './ModalViewDetails';
+import ModalViewDetails from '../ModalViewDetails';
 import ContentModalAddNewProduct from './ContentModalAddNewProduct';
 
 const ModalProductManager = ({ title, isActioning, width, setIsActioning, setActioningProduct, actioningProduct, fileList, setFileList, brandDefault,
-    categoryDefault, brands, categories, brandsSelect, categorySelect }) => {
+    categoryDefault, brands, categories, brandsSelect, categorySelect, setIsListProductsChanged }) => {
 
     return (
         <Modal
+            className=''
             title={title}
             open={isActioning === true}
             width={width}
@@ -57,6 +58,7 @@ const ModalProductManager = ({ title, isActioning, width, setIsActioning, setAct
                     categorySelect={categorySelect}
                     fileList={fileList}
                     setFileList={setFileList}
+                    setIsListProductsChanged={setIsListProductsChanged}
                 ></ContentModalAddNewProduct>
 
             }

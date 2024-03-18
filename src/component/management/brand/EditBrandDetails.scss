@@ -1,0 +1,22 @@
+.fpm-wrap-input-file {
+   display: flex;
+   justify-content: center;
+   // flex-direction: column;
+   // border: 2px dashed rgb(34, 146, 184);
+   border: 1px solid;
+   padding: 15px;
+}
+.fpm-wrap-input-file:hover {
+   border: 2px dashed #1677ff;
+   background-color: rgb(235, 235, 235);
+}
+.fpm-wrap-input-file:hover .fpm-text-hidden {
+   display: block !important;
+}
+.wrap-modal-fpm .ant-image {
+   width: 100%;
+}
+.hide-image {
+   mix-blend-mode: darken;
+   //   opacity: 0.8;
+}

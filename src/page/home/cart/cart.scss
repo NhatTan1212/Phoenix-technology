@@ -58,7 +58,7 @@
 }
 
 .ant-table-cell{
-    font-size: 15px !important;
+    // font-size: 15px !important;
 }
 
 .ant-btn:hover{
@@ -83,3 +83,9 @@
 .model-payment-status .ant-modal-body{
     text-align: center;
 }
+
+.btn-antd-disabled:hover{
+    border-color: #b8b8b8 !important;
+    color: #b8b8b8 !important;
+    background-color: #eee !important;
+}   

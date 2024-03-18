@@ -17,3 +17,9 @@
     
     border: solid 1px #cb1c22;
    }
+
+   @media (min-width: 1650px) {
+    .allproduct-wrap-content {
+      width: 1650px;
+    }
+  }

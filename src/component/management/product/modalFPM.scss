@@ -20,3 +20,17 @@ width: 100%;
   mix-blend-mode: darken;
 //   opacity: 0.8;
 }
+
+.pm-row .jodit-react-container{
+    width: 100%;
+}
+
+.pm-row {
+    .jodit-workplace {
+        min-height: 400px !important;
+    }
+    .jodit-wysiwyg{
+        min-height: 400px !important;
+}
+}
+

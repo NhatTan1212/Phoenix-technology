@@ -8,8 +8,14 @@ import './orderDetail.scss'
 import Instance from '../../../axiosInstance';
 import DeliveryAddressOrderDetail from '../../../component/management/DeliveryAddress';
 import TableOrderDetail from '../../../component/management/TableOrderDetail';
+import Context from '../../../store/Context';
 
 function OrderDetail() {
+    const context = useContext(Context)
+    const isHiddenAutoCpl = context.isHiddenAutoCpl
+    const isScreenSmaller1280 = context.isScreenSmaller1280
+    const isScreenSmaller430 = context.isScreenSmaller430
+
     const { id } = useParams();
     const token = Cookies.get('token');
     const tokenGID = Cookies.get('tokenGID');
@@ -28,7 +34,7 @@ function OrderDetail() {
                 ))
                 return (
                     // console.log("record", record)
-                    <div className='w-[108px]'>
+                    <div className='w-[108px] '>
                         < img
                             src={product.avatar}
                             className='w-full h-auto border-[1px] border-[#e1dada]'
@@ -68,6 +74,38 @@ function OrderDetail() {
             render: (_, record) => (
                 <span>{record.quantity}</span>
             )
+        },
+    ];
+
+    const deviceColumns = [
+        {
+            title: 'Danh sách sản phẩm',
+            render: (_, record) => {
+                const product = products.find((item) => (
+                    item.id === record.product_id
+                ))
+                return (
+                    // console.log("record", record)
+                    <div >
+                        <div className='flex max-[650px]:flex-col'>
+                            <div className='mr-4 w-[108px] min-w-[108px]'>
+                                < img
+                                    src={product.avatar}
+                                    className='w-full h-auto border-[1px] border-[#e1dada]'
+                                ></img >
+                            </div>
+                            <p className='font-bold text-[17px] text-[#333]   max-[470px]:max-w-[300px]'>{product.prod_description}</p>
+
+                        </div>
+                        <div className='flex justify-between'>
+                            <span className='ml-[124px] max-[650px]:mx-0'>x{record.quantity}</span>
+                            <span>{record.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
+
+                        </div>
+                    </div>
+                )
+
+            }
         },
     ];
 
@@ -121,19 +159,18 @@ function OrderDetail() {
     return (
 
         <div className='bg-[#f0f0f0] py-3'>
-            <div className='w-10/12  mx-[auto] '>
-                <div className=' mx-[263px] mb-3'>
-                    <div className='flex items-center justify-between mb-3'>
-                        <Link to={'/order'} className='flex items-center'>
+            <div className='w-10/12  mx-[auto] max-[1550px]:w-full '>
+                <div className=' mx-[263px] mb-3 max-[1550px]:mx-[293px] max-[1360px]:mx-[30px]'>
+                    <div className='flex items-center justify-between mb-3 max-[730px]:flex-col max-[730px]:items-start'>
+                        <Link to={'/order'} className='flex items-center '>
                             <FontAwesomeIcon
                                 className='text-[gray] pr-2'
                                 icon={faAngleLeft}></FontAwesomeIcon>
                             <h5 className=''>Quay lại các đơn đặt hàng của bạn</h5>
                         </Link>
-                        <div>
-                            <span>Mã đơn hàng: {order ? order.id : 'N/A'}</span>
-                            <span className='mx-4'>|</span>
-                            <span className='text-[#ed1d24] uppercase font-bold'>
+                        <div className='max-[435px]:flex max-[435px]:flex-col'>
+                            <span>Mã đơn hàng: {order ? order.id : 'N/A'} |</span>
+                            <span className='text-[#ed1d24] uppercase font-bold ml-4 max-[435px]:ml-0'>
                                 {order ? order.user_address === 'Nhận hàng tại cửa hàng' ? 'Đặt hàng thành công'
                                     : order.is_success === 1 ? 'Đơn hàng đã hoàn tất'
                                         : order.is_transported === 1 ? 'Đơn hàng đã được giao đến nơi'
@@ -149,9 +186,9 @@ function OrderDetail() {
                     </div>
 
                 </div>
-                <div className='bg-[#ffffff] mx-[263px] flex flex-col'>
+                <div className='bg-[#ffffff] mx-[263px] flex flex-col max-[1550px]:mx-[293px] max-[1360px]:mx-[30px]'>
                     <TableOrderDetail
-                        columns={columns}
+                        columns={isHiddenAutoCpl ? columns : deviceColumns}
                         dataSource={dataTable}
                         order={order} />
                 </div>

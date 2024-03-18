@@ -51,6 +51,10 @@ const SignUp = () => {
                 email: email,
                 pass: password
             };
+            if (Cookies.get('tokenGID')) {
+                // console.log(Cookies.get('tokenGID'));
+                dataUser['GID'] = Cookies.get('tokenGID')
+            }
 
             fetch("http://localhost:8000/requireregister", {
                 method: "POST",
@@ -95,7 +99,7 @@ const SignUp = () => {
         const newEmail = e.target.value;
         setHasEmailChanged(true);
         setEmail(newEmail);
-        const regexEmail = /^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/;
+        const regexEmail = /^[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/;
         const isEmailValid = regexEmail.test(newEmail) && newEmail.length <= 255;
         setEmailInvalid(!isEmailValid);
     };

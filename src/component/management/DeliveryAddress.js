@@ -1,8 +1,15 @@
+import { useContext } from "react"
+import Context from "../../store/Context"
+
 const DeliveryAddressOrderDetail = ({ order }) => {
+    const context = useContext(Context)
+    const isHiddenAutoCpl = context.isHiddenAutoCpl
+    const isScreenSmaller1280 = context.isScreenSmaller1280
+    const isScreenSmaller430 = context.isScreenSmaller430
     return (
         <>
             <h3 className='text-[20px] p-4'>Địa chỉ nhận hàng</h3>
-            <div className='flex justify-between p-4 pt-0'>
+            <div className='flex justify-between p-4 pt-0 max-[730px]:justify-start max-[730px]:flex-col'>
                 {order ?
                     <>
                         <ul>

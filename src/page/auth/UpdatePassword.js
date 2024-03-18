@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './UpdatePassword.scss';
-import { useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import '../../views/font.scss'
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -9,20 +9,22 @@ import { faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import Instance from '../../axiosInstance';
 
 const UpdatePassword = () => {
+    const navigate = useNavigate()
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const { email } = useParams();
     const [password, setPassword] = useState('');
     const [isSendMailFail, setIsSendEmailFail] = useState(false);
     const [passwordErr, setPasswordErr] = useState('')
 
-    const token = new URLSearchParams(window.location.search).get('token');
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
 
     const showPassword = () => {
         return setIsPasswordVisible(!isPasswordVisible)
     }
 
     const handleConfirm = () => {
-        console.log(window.location.search)
+        const token = queryParams.get('token')
         if (password === '') {
             return;
         } else if (password.length < 6) {
@@ -37,7 +39,8 @@ const UpdatePassword = () => {
                         // console.log(res.data.message)
                         setIsSendEmailFail(false)
                         alert(res.data.message)
-                        window.location.href = '/auth'
+
+                        navigate('/auth')
                     } else {
                         setIsSendEmailFail(true)
                         setPasswordErr(res.message)

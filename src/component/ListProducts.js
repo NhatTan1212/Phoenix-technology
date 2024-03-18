@@ -16,7 +16,7 @@ const renderListProduct = (product, brands) => {
     return (
 
         <Card.Grid style={gridStyle} key={product.id}
-            className='relative h-full p-5'>
+            className='relative h-full p-5 '>
             <div className='absolute top-[15px] right-[15px] 
             z-[2] '>
                 <span
@@ -28,7 +28,7 @@ const renderListProduct = (product, brands) => {
                     -{product.prod_percent}%
                 </span>
             </div>
-            <div className='flex overflow-hidden items-center h-[60%] py-7 justify-center'>
+            <div className='flex overflow-hidden items-center h-[60%] py-7 justify-center min-h-[170px]'>
                 <Link to={`/product-detail/${product.id}`}
                     className=''>
                     <img src={product.avatar} alt=''
@@ -38,18 +38,18 @@ const renderListProduct = (product, brands) => {
 
             </div>
             <div className='flex justify-start text-start 
-        items-start h-[40%] flex-col '>
+        items-start h-[40%] flex-col overflow-hidden '>
                 {brand && <img src={brand.image} alt="Brand Logo"
-                    className="brand-logo max-w-[80px]" />}
-                <Link className=' text-[16px] line-clamp-2 font-bold min-h-[50px]
-                overflow-hidden mt-[25px]'>
+                    className="brand-logo max-w-[80px] min-h-[36px]" />}
+                <Link to={`/product-detail/${product.id}`} className=' text-[16px] line-clamp-2 font-bold min-h-[50px]
+                overflow-hidden mt-[25px] w-full'>
                     {product.prod_description}
                 </Link>
                 <span className='text-[#1d1d1d] text-[16px] 
             line-through'>
                     {formatPriceWithCommas(product.cost)} đ
                 </span>
-                <span className='text-[#c8191f] text-[21px] 
+                <span className='text-[#c8191f] text-[21px] max-[430px]:text-[17px]
             font-bold'>
                     {formatPriceWithCommas(product.price)} đ
                 </span>

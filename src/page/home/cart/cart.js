@@ -3,15 +3,16 @@ import Context from '../../../store/Context';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie'; // Import thư viện js-cookie
 import axios from 'axios';
-import { Button, InputNumber, Space, Table, Input, Radio, Row, Select, Modal } from 'antd';
+import { Button, InputNumber, Space, Table, Input, Radio, Row, Select, Modal, Col } from 'antd';
 import './cart.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faXmark, faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faAngleLeft, faAngleRight, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faCircleCheck, faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import Instance from '../../../axiosInstance';
 import CryptoJS from 'crypto-js';
 import qs from 'qs';
-
+import { AddNewDeliveryAddress, GetDeliveryAddress } from '../../../callAPI/api';
+import ModalSelectAddress from '../../../component/ModalSelectAddress';
 
 function sortObject(obj) {
     let sorted = {};
@@ -30,10 +31,16 @@ function sortObject(obj) {
 }
 
 function Cart() {
+    const context = useContext(Context)
+    const isHiddenAutoCpl = context.isHiddenAutoCpl
+    const isScreenSmaller1280 = context.isScreenSmaller1280
+    const isScreenSmaller430 = context.isScreenSmaller430
+
     const navigate = useNavigate();
     const token = Cookies.get('token');
     const tokenGID = Cookies.get('tokenGID');
-    const context = useContext(Context)
+    const isFinishAddNewOrderVNPAY = context.isFinishAddNewOrderVNPAY
+    const setIsFinishAddNewOrderVNPAY = context.setIsFinishAddNewOrderVNPAY
     const isCartChange = context.isCartChange
     const setIsCartChange = context.setIsCartChange
     const [cart, setCart] = useState([]);
@@ -52,16 +59,19 @@ function Cart() {
     const [customerPhone, setCustomerPhone] = useState('')
     const [customerEmail, setCustomerEmail] = useState('')
     const [note, setNote] = useState('')
-    const [avatar, setAvatar] = useState('')
     const [listProduct, setListProduct] = useState([])
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [productIdToDelete, setProductIdToDelete] = useState(null);
+    const [isSelectingDeliveryAddress, setIsSelectingDeliveryAddress] = useState(false);
+    const [addressSaved, setAddressSaved] = useState(null);
+    const [isFinish, setIsFinish] = useState(false)
+    const [isAddressDeliveryChange, setIsAddressDeliveryChange] = useState(false)
+    const [idNavigateOrderDetail, setIdNavigateOrderDetail] = useState('')
 
     //Xử lý VNPAY
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const [vnpayStatus, setVnpayStatus] = useState(null);
-    let secureHash = ''
 
     const addClassCSS = () => {
         //add class antd input
@@ -74,9 +84,13 @@ function Cart() {
             title: 'Hình sản phẩm',
             dataIndex: 'avatar',
             key: 'avatar',
+            sortDirections: ["descend", "ascend"],
+
             render: (_, record) => (
                 // console.log("record", record)
-                <div className='w-[108px]'>
+                <div
+                    className='w-[108px]'
+                >
                     < img
                         src={record.avatar}
                         className='w-full h-auto border-[1px] border-[#e1dada]'
@@ -89,6 +103,8 @@ function Cart() {
             title: 'Miêu tả',
             dataIndex: 'description',
             key: 'description',
+            sortDirections: ["descend", "ascend"],
+
             render: (_, record) => (
                 // console.log("record", record)
                 <p className='font-bold text-[17px] text-[#333]'>{record.description}</p>
@@ -98,25 +114,34 @@ function Cart() {
             title: 'Đơn giá',
             key: 'price',
             dataIndex: 'price',
+            sortDirections: ["descend", "ascend"],
+
             render: (_, record) => (
                 <span>{record.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
             )
         },
         {
+            width: 100,
             title: 'Số lượng',
             key: 'count',
             dataIndex: 'count',
+            sortDirections: ["descend", "ascend"],
+
             render: (_, record) => (
-                <InputNumber
-                    min={1}
-                    max={record.is_possible_to_order}
-                    value={record.count}
-                    onChange={(newQuantity) => handleQuantityChange(record.id, newQuantity)} />
+                record.is_possible_to_order !== 0 ?
+                    <InputNumber
+                        min={1}
+                        max={record.is_possible_to_order}
+                        value={record.count}
+                        onChange={(newQuantity) => handleQuantityChange(record.id, newQuantity)} />
+                    : <span className='text-[#e6101d] font-bold'>Hết hàng</span>
             )
         },
         {
             title: 'Xóa',
             key: 'action',
+            sortDirections: ["descend", "ascend"],
+
             render: (_, record) => (
                 <Space size="middle">
                     <a onClick={async () => {
@@ -133,11 +158,69 @@ function Cart() {
         },
     ];
 
+    const deviceColumns = [
+        {
+            title: "Giỏ hàng",
+            render: (record, key, index) => {
+                return (
+                    <div>
+                        <Row>
+                            <Col md={{ span: 6, offset: 1 }} sm={{ span: 6, offset: 1 }} xs={{ span: 24, offset: 0 }}>
+                                <div
+                                    className='w-[108px]'
+                                >
+                                    < img
+                                        src={record.avatar}
+                                        className='w-full h-auto border-[1px] border-[#e1dada]'
+                                    ></img >
+
+                                </div>
+                            </Col>
+                            <Col md={{ span: 17 }} sm={{ span: 17 }} xs={{ span: 24 }}>
+                                <p className='font-bold text-[17px] text-[#333] max-[420px]:max-w-[300px]'>{record.description}</p>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col md={{ span: 6, offset: 1 }} sm={{ span: 6, offset: 1 }} xs={{ span: 8, offset: 0 }} />
+                            <Col md={{ span: 17 }} sm={{ span: 17 }} xs={{ span: 24 }}>{record.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</Col>
+                        </Row>
+                        <Row>
+                            <Col md={{ span: 6, offset: 1 }} sm={{ span: 6, offset: 1 }} xs={{ span: 8, offset: 0 }}></Col>
+                            <Col md={{ span: 17 }} sm={{ span: 17 }} xs={{ span: 24 }}>
+                                {
+                                    record.is_possible_to_order !== 0 ?
+                                        <InputNumber
+                                            min={1}
+                                            max={record.is_possible_to_order}
+                                            value={record.count}
+                                            onChange={(newQuantity) => handleQuantityChange(record.id, newQuantity)} />
+                                        : <span className='text-[#e6101d] font-bold'>Hết hàng</span>
+                                }
+                                <span>
+                                    <Space size="middle" className='pl-3'>
+                                        <a onClick={async () => {
+                                            setProductIdToDelete(record.product_id)
+                                            await setShowDeleteConfirmation(true)
+
+                                            const okButtonModal = document.querySelector('.ant-btn-primary')
+                                            okButtonModal.id = 'okButtonModal'
+                                        }}>
+                                            <FontAwesomeIcon icon={faXmark} className='text-[#c8191f]' ></FontAwesomeIcon>
+                                        </a>
+                                    </Space>
+                                </span>
+                            </Col>
+                        </Row>
+                    </div>
+                )
+            }
+        }
+    ];
+
     const data = cart.map((item) => ({
         ...item,
         key: item.id
     }));
-
 
     const handleQuantityChange = (productId, newQuantity) => {
         const updatedCart = cart.map(item => {
@@ -152,10 +235,27 @@ function Cart() {
         setCart(updatedCart);
         console.log(cart)
     };
+    const getDeliveryAddress = () => {
+        if (token) {
+            console.log('hi');
+            console.log(token);
+            let requestData = {
+                token: token
+            }
+            GetDeliveryAddress(requestData).then((data) => {
+                console.log(data.delivery_address);
+                setAddressSaved(data.delivery_address)
+            })
+        }
+
+    }
+
+    const handleSelectingDeliveryAddress = () => {
+        getDeliveryAddress()
+        setIsSelectingDeliveryAddress(true)
+    }
 
     const handleDeleteCart = (productId) => {
-
-
         // Xác định giá trị token hoặc tokenGID để sử dụng
         const authValue = token ? token : tokenGID;
         const authKey = token ? 'token' : 'tokenGID';
@@ -180,8 +280,6 @@ function Cart() {
     };
 
     const handleUpdateCart = () => {
-
-
         // Xác định giá trị token hoặc tokenGID để sử dụng
         const authValue = token ? token : tokenGID;
         const authKey = token ? 'token' : 'tokenGID';
@@ -197,8 +295,6 @@ function Cart() {
             }
         })
             .then(response => {
-                // getCart();
-                // setIsCartChange(true);
                 context.Message("success", "Cập nhật giỏ hàng thành công.")
             })
             .catch(error => {
@@ -207,20 +303,12 @@ function Cart() {
     };
 
 
-    useEffect(() => {
-        getCart();
-        addClassCSS();
-        getDiaGioiHanhChinhVN();
-    }, [isCartChange]);
 
-    useEffect(() => {
-        // Calculate the sum whenever the cart changes
-        const newSum = cart.reduce((accumulator, item) => accumulator + item.product_total, 0);
-        setSum(newSum);
-    }, [cart]);
-
-    useEffect(() => {
-        if (queryParams.has('vnp_ResponseCode')) {
+    const postToCreateNewOrder = () => {
+        console.log(isFinishAddNewOrderVNPAY);
+        if (queryParams.has('vnp_ResponseCode') && !isFinishAddNewOrderVNPAY) {
+            setIsFinishAddNewOrderVNPAY(true)
+            console.log(isFinishAddNewOrderVNPAY);
             // Thực hiện xử lý dựa trên ResponseCode từ VNPAY
             let objParams = Object.fromEntries(queryParams);
             let newObjParams = { ...objParams };
@@ -239,10 +327,43 @@ function Cart() {
             console.log(signData, secretKey);
             console.log(signed);
             console.log(secureHash);
+            const getDataOder = sessionStorage.getItem('dataOrder');
             if (signed === secureHash) {
                 if (responseCode === '00') {
-                    // Thanh toán thành công
-                    setVnpayStatus('success');
+                    if (getDataOder) {
+                        const dataOder = JSON.parse(getDataOder);
+                        let vnp_BankCode = queryParams.get('vnp_BankCode')
+                        let vnp_CardType = queryParams.get('vnp_CardType')
+                        let vnp_OrderInfo = queryParams.get('vnp_OrderInfo')
+                        let vnp_PayDate = queryParams.get('vnp_PayDate')
+                        let vnp_TransactionNo = queryParams.get('vnp_TransactionNo')
+                        dataOder["vnp_BankCode"] = vnp_BankCode
+                        dataOder["vnp_CardType"] = vnp_CardType
+                        dataOder["vnp_OrderInfo"] = vnp_OrderInfo
+                        dataOder["vnp_PayDate"] = vnp_PayDate
+                        dataOder["vnp_TransactionNo"] = vnp_TransactionNo
+                        // console.log(dataOder);
+                        Instance.post('/dataorder', dataOder, {
+                            headers: {
+                                "Content-Type": "application/json",
+                            }
+                        })
+                            .then(response => {
+                                sessionStorage.removeItem("dataOrder")
+                                // Thanh toán thành công
+                                console.log(response);
+                                setVnpayStatus('success');
+                                if (response.data.order_id) {
+                                    setIdNavigateOrderDetail(response.data.order_id)
+                                }
+                                setIsCartChange(true)
+                            })
+                            .catch(error => {
+                                console.error('Error updating cart:', error);
+                                context.Message("error", "Đã có lỗi xảy ra khi đặt hàng.")
+
+                            });
+                    }
                 } else {
                     // Thanh toán thất bại
                     setVnpayStatus('failed');
@@ -252,7 +373,7 @@ function Cart() {
                 setVnpayStatus('failed');
             }
         }
-    }, [location]);
+    }
 
     const getDiaGioiHanhChinhVN = () => {
         var Parameter = {
@@ -263,9 +384,6 @@ function Cart() {
         var promise = axios(Parameter);
         promise.then(function (result) {
             let data = JSON.parse(result.data)
-            // console.log("dghc", data);
-
-            // setOptionsSelectProvince(result.data)
             const transformedData = data.map(province => {
                 const transformedProvince = {
                     ...province,
@@ -294,9 +412,6 @@ function Cart() {
     }
 
     const getCart = () => {
-
-        // console.log(token, tokenGID);
-
         if (token !== undefined) {
             Instance.post('/cart', { token }, {
                 headers: {
@@ -330,7 +445,6 @@ function Cart() {
         }
     }
 
-
     const handleChangeProvince = (e) => {
         let findProvince = optionsSelectProvince.find((province) => {
             return province.Name === e
@@ -358,97 +472,141 @@ function Cart() {
     }
 
     const handleOrder = () => {
-        const authValue = token ? token : tokenGID;
-        const authKey = token ? 'token' : 'tokenGID';
+        if (cart.length !== 0) {
+            const authValue = token ? token : tokenGID;
+            const authKey = token ? 'token' : 'tokenGID';
 
-        // Kiểm tra xem tất cả thông tin cần thiết đã được điền đầy đủ
-        if (!customerName || !customerPhone || !customerEmail) {
-            context.Message("error", "Vui lòng điền đầy đủ thông tin khách hàng.");
-            return;
-        }
-        if (valueRadioReceive === "Giao hàng tận nơi") {
-            if (detailAddress === "") {
-                context.Message("error", "Quý khách vui lòng nhập địa chỉ giao hàng.");
-            } else if (provinceSelected === null) {
-                context.Message("error", "Quý khách vui lòng chọn tỉnh/thành phố nhận hàng.");
-            } else if (districtSelected === null) {
-                context.Message("error", "Quý khách vui lòng chọn quận/huyện nhận hàng.");
-            } else if (wardSelected === null) {
-                context.Message("error", "Quý khách vui lòng chọn phường/xã nhận hàng.");
+            // Kiểm tra xem tất cả thông tin cần thiết đã được điền đầy đủ
+            if (!customerName || !customerPhone || !customerEmail) {
+                context.Message("error", "Vui lòng điền đầy đủ thông tin khách hàng.");
+                return;
+            }
+            if (valueRadioReceive === "Giao hàng tận nơi") {
+                if (detailAddress === "") {
+                    context.Message("error", "Quý khách vui lòng nhập địa chỉ giao hàng.");
+                } else if (provinceSelected === null) {
+                    context.Message("error", "Quý khách vui lòng chọn tỉnh/thành phố nhận hàng.");
+                } else if (districtSelected === null) {
+                    context.Message("error", "Quý khách vui lòng chọn quận/huyện nhận hàng.");
+                } else if (wardSelected === null) {
+                    context.Message("error", "Quý khách vui lòng chọn phường/xã nhận hàng.");
+                }
+
             }
 
-        }
+            let newList = []
+            cart.forEach(item => {
+                console.log(item)
+                newList.push(item)
+            });
+            setListProduct(newList)
 
-        cart.forEach(item => {
-            console.log(item)
-            listProduct.push(item)
-        });
-        // console.log(listProduct)
-        const dataOder = {
-            [authKey]: authValue,
-            total: sum,
-            email: customerEmail,
-            phone: customerPhone,
-            name: customerName,
-            userAddress: valueRadioReceive === "Nhận hàng tại cửa hàng" ? "Nhận hàng tại cửa hàng" : `${detailAddress}, ${wardSelected}, ${districtSelected}, ${provinceSelected}`,
-            note: note,
-            paymentMethod: valueRadioPay,
-            listProduct: listProduct,
-            avatar: cart[0].avatar
-        }
-        if (valueRadioPay === 'VNPAY') {
-            if (valueRadioLanguage === 'vn' || valueRadioLanguage === '' || valueRadioLanguage === null) {
-                dataOder['language'] = 'vn'
-                dataOder['amount'] = sum
-                dataOder['bankCode'] = 'VNBANK'
-            } else {
-                dataOder['language'] = 'en'
-                dataOder['amount'] = sum
-                dataOder['bankCode'] = 'VNBANK'
+            // console.log(listProduct)
+            const dataOder = {
+                [authKey]: authValue,
+                total: sum,
+                email: customerEmail,
+                phone: customerPhone,
+                name: customerName,
+                userAddress: valueRadioReceive === "Nhận hàng tại cửa hàng" ? "Nhận hàng tại cửa hàng" : `${detailAddress}, ${wardSelected}, ${districtSelected}, ${provinceSelected}`,
+                note: note,
+                paymentMethod: valueRadioPay,
+                listProduct: newList,
+                avatar: cart[0].avatar,
+                prod_name: cart[0].prod_name,
+                quantity: cart[0].count,
+                total_product: newList.length,
+
             }
-        }
-        console.log(dataOder)
-        if (valueRadioPay !== 'VNPAY') {
-            Instance.post('/dataorder', dataOder, {
-                headers: {
-                    "Content-Type": "application/json",
+            if (valueRadioPay === 'VNPAY') {
+                if (valueRadioLanguage === 'vn' || valueRadioLanguage === '' || valueRadioLanguage === null) {
+                    dataOder['language'] = 'vn'
+                    dataOder['amount'] = sum
+                    dataOder['bankCode'] = 'VNBANK'
+                } else {
+                    dataOder['language'] = 'en'
+                    dataOder['amount'] = sum
+                    dataOder['bankCode'] = 'VNBANK'
                 }
-            })
-                .then(response => {
-                    context.Message("success", "Quý khách đã đặt hàng thành công.")
-                })
-                .catch(error => {
-                    console.error('Error updating cart:', error);
-                    context.Message("error", "Đã có lỗi xảy ra khi đặt hàng.")
-
-                });
-        }
-        else {
-            Instance.post('/create_payment_url', dataOder, {
-                headers: {
-                    "Content-Type": "application/json",
-                }
-            })
-                .then(response => {
-                    console.log(response);
-                    if (response.data.success) {
-                        context.Message("success", "Quý khách đã đặt hàng thành công.")
-                        // navigate(response.data.redirect)
-                        window.open(response.data.redirect, "_blank");
+            }
+            console.log(dataOder)
+            const dataString = JSON.stringify(dataOder);
+            sessionStorage.setItem('dataOrder', dataString);
+            if (valueRadioPay !== 'VNPAY') {
+                Instance.post('/dataorder', dataOder, {
+                    headers: {
+                        "Content-Type": "application/json",
                     }
                 })
-                .catch(error => {
-                    console.error('Error updating cart:', error);
-                    context.Message("error", "Đã có lỗi xảy ra khi đặt hàng.")
+                    .then(response => {
+                        if (!response.data.success) {
+                            return context.Message("error", response.data.msg)
+                        }
+                        setVnpayStatus('success');
+                        console.log(response);
+                        if (response.data.order_id) {
+                            setIdNavigateOrderDetail(response.data.order_id)
+                        }
+                        setIsCartChange(true)
+                    })
+                    .catch(error => {
+                        console.error('Error updating cart:', error);
+                        context.Message("error", "Đã có lỗi xảy ra khi đặt hàng.")
 
-                });
+                    });
+                setListProduct([])
+            } else {
+                Instance.post('/create_payment_url', dataOder, {
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                })
+                    .then(response => {
+                        console.log(response);
+                        if (response.data.success) {
+                            // context.Message("success", "Quý khách đã đặt hàng thành công.")
+                            // navigate(response.data.redirect)
+                            // window.open(response.data.redirect, "_blank");
+                            window.location.href = response.data.redirect;
+
+                        } else {
+                            return context.Message("error", response.data.msg)
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error updating cart:', error);
+                        context.Message("error", "Đã có lỗi xảy ra khi đặt hàng.")
+
+                    });
+                setListProduct([])
+                return
+            }
+            return
+        } else {
+            context.Message('error', 'Giỏ hàng hiện không có sản phẩm nào.')
         }
-        setListProduct([])
+
     }
+
+    useEffect(() => {
+        getCart();
+        addClassCSS();
+        getDiaGioiHanhChinhVN();
+    }, [isCartChange]);
+
+    useEffect(() => {
+        // Calculate the sum whenever the cart changes
+        const newSum = cart.reduce((accumulator, item) => accumulator + item.product_total, 0);
+        setSum(newSum);
+    }, [cart]);
+
+    useEffect(() => {
+        postToCreateNewOrder()
+    }, []);
 
     return (
 
-        <div className='bg-[#f0f0f0] py-3'>
+        <div className='bg-[#f0f0f0] py-3   mx-[auto] max-w-[805px]'>
             <Modal
                 title="Xác nhận xóa sản phẩm"
                 open={showDeleteConfirmation}
@@ -461,14 +619,37 @@ function Cart() {
             >
                 <p>Bạn có chắc chắn muốn xóa sản phẩm khỏi giỏ hàng?</p>
             </Modal>
+            <ModalSelectAddress
+                addressSaved={addressSaved}
+                isSelectingDeliveryAddress={isSelectingDeliveryAddress}
+                setIsSelectingDeliveryAddress={setIsSelectingDeliveryAddress}
+                optionsSelectProvince={optionsSelectProvince}
+                optionsSelectWards={optionsSelectWards}
+                optionsSelectDistricts={optionsSelectDistricts}
+                setDetailAddress={setDetailAddress}
+                setProvinceSelected={setProvinceSelected}
+                setDistrictSelected={setDistrictSelected}
+                setWardSelected={setWardSelected}
+                setOptionsSelectDistricts={setOptionsSelectDistricts}
+                setOptionsSelectWards={setOptionsSelectWards}
+                isAddressDeliveryChange={isAddressDeliveryChange}
+                setIsAddressDeliveryChange={setIsAddressDeliveryChange}
+                getDeliveryAddress={getDeliveryAddress}
+            />
+
+
             <Modal
-                title="Thông tin thanh toán"
                 open={vnpayStatus}
                 width={700}
                 onOk={() => {
                     setVnpayStatus(null)
+                    setIsFinishAddNewOrderVNPAY(false)
                 }}
-                onCancel={() => setVnpayStatus(null)} // Đóng modal khi bấm hủy
+                onCancel={() => {
+                    setIsFinishAddNewOrderVNPAY(false)
+                    setVnpayStatus(null)
+                } // Đóng modal khi bấm hủy
+                }
                 className='model-payment-status'
                 footer={null}
             >
@@ -477,20 +658,23 @@ function Cart() {
                         ?
                         <>
                             <FontAwesomeIcon
-                                className='text-[#4ea722] text-[40px]'
+                                className='text-[#4ea722] text-[60px]'
                                 icon={faCircleCheck}></FontAwesomeIcon>
-                            <p className='text-[#e5101d] text-[20px]'>Đơn hàng của quý khách đã thanh toán thành công!</p>
-                            <ul>
-                                <li>Tên người nhận: {customerName}</li>
-                                <li>Email người nhận: {customerEmail}</li>
-                                <li>Số điện thoại người nhận: {customerPhone}</li>
-                                <li>Địa chỉ nhận hàng: {detailAddress + ', ' + wardSelected + ', ' + districtSelected + ', ' + provinceSelected}</li>
-                                <li>Tổng số tiền đã thanh toán: {queryParams.get('vnp_Amount')}</li>
-                                <li>Phương thức thanh toán: Thanh toán qua ATM-Tài khoản ngân hàng nội địa (VNPAY)</li>
-                            </ul>
-                            <div>
-                                <Button className='mr-2'>Tiếp tục mua hàng</Button>
-                                <Button className='ml-2'>Xem chi tiết đơn hàng</Button>
+                            <p className='text-[#4ea722] text-[20px] my-6'>Đơn hàng của quý khách đã thanh toán thành công!</p>
+                            <div className=''>
+                                <Button
+                                    className='w-[180px] mr-6'
+                                    onClick={() => {
+                                        setVnpayStatus(null)
+                                        setIsFinishAddNewOrderVNPAY(false)
+                                    }}
+                                >Tiếp tục mua hàng</Button>
+                                <Button
+                                    className='w-[180px]'
+                                    onClick={() => {
+                                        navigate(`../order-detail/${idNavigateOrderDetail}`)
+                                    }}
+                                >Xem chi tiết đơn hàng</Button>
                             </div>
                         </>
                         :
@@ -505,17 +689,17 @@ function Cart() {
                         </>
                 }
             </Modal>
-            <div className='w-10/12  mx-[auto] '>
-                <Link to={'/'} className='flex items-center mx-[263px] mb-3'>
+            <div className=''>
+                <Link to={'/'} className='flex items-center  mb-3'>
                     <FontAwesomeIcon
                         className='text-[gray] pr-2'
                         icon={faAngleLeft}></FontAwesomeIcon>
                     <h5>Quay lại mua thêm sản phẩm khác</h5>
                 </Link>
-                <div className='bg-[#ffffff] mx-[263px] inline-block'>
+                <div className='bg-[#ffffff] inline-block'>
                     <Table
                         className=''
-                        columns={columns}
+                        columns={isHiddenAutoCpl ? columns : deviceColumns}
                         dataSource={data} />
                     <div className='flex justify-between font-bold text-[20px]
                 '>
@@ -526,7 +710,7 @@ function Cart() {
                     </div>
 
 
-                    <div className='mx-5 my-5 px-3 py-5 border-[1px] border-[#d9d9d9]'>
+                    <div className='mx-5 my-5 px-3 py-5 border-[1px] border-[#d9d9d9] max-[400px]:mx-0'>
                         <h3 className='font-bold text-[18px] text-[#333333]'>1. Thông tin khách hàng</h3>
                         <div className='px-5 '>
                             <Input
@@ -570,15 +754,23 @@ function Cart() {
                                 style={{ width: "100%" }}
                                 className='my-3'
                             >
-                                <Row>
-                                    <Radio
-                                        className={valueRadioReceive === "Giao hàng tận nơi"
-                                            ? 'rad-after relative' : 'relative'}
-                                        value={"Giao hàng tận nơi"}>Giao hàng tận nơi (Có phí giao hàng)</Radio>
-                                    <Radio
-                                        className={valueRadioReceive === "Nhận hàng tại cửa hàng"
-                                            ? 'rad-after relative' : 'relative'}
-                                        value={"Nhận hàng tại cửa hàng"}>Nhận hàng tại cửa hàng</Radio>
+                                <Row className='flex justify-between'>
+                                    <div className=''>
+                                        <Radio
+                                            className={valueRadioReceive === "Giao hàng tận nơi"
+                                                ? 'rad-after relative' : 'relative'}
+                                            value={"Giao hàng tận nơi"}>Giao hàng tận nơi (Có phí giao hàng)</Radio>
+                                        <Radio
+                                            className={valueRadioReceive === "Nhận hàng tại cửa hàng"
+                                                ? 'rad-after relative' : 'relative'}
+                                            value={"Nhận hàng tại cửa hàng"}>Nhận hàng tại cửa hàng</Radio>
+                                    </div>
+                                    <div onClick={
+                                        () => handleSelectingDeliveryAddress()
+                                    }>
+                                        <FontAwesomeIcon icon={faPlus} />
+                                        <span className='text-[15px] pl-1 font-bold hover:underline hover:cursor-pointer '>Chọn địa chỉ giao hàng</span>
+                                    </div>
                                 </Row>
                             </Radio.Group>
 
@@ -598,10 +790,10 @@ function Cart() {
                                             onChange={(e) => {
                                                 setDetailAddress(e.target.value)
                                             }}
-                                            placeholder='Địa chỉ'></Input>
-                                        <div className='flex items-center justify-between '>
+                                            placeholder='Chi tiết tên đường, số nhà'></Input>
+                                        <div className={`${isHiddenAutoCpl ? 'flex' : ''} items-center justify-between `}>
                                             <Select
-                                                className='my-3 flex-1 mr-2 items-center'
+                                                className={` my-3 flex-1 mr-2 items-center  ${!isHiddenAutoCpl ? 'w-full mx-0' : 'ml-0'}`}
                                                 showSearch
                                                 value={provinceSelected || "Chọn Tỉnh/Thành phố"}
                                                 options={optionsSelectProvince}
@@ -612,7 +804,7 @@ function Cart() {
 
                                             </Select>
                                             <Select
-                                                className='my-3 flex-1 mx-2'
+                                                className={` my-3 flex-1  ${!isHiddenAutoCpl ? 'w-full mx-0' : 'mx-2'}`}
                                                 showSearch
                                                 value={districtSelected || "Chọn Quận/Huyện"}
                                                 options={optionsSelectDistricts}
@@ -623,7 +815,7 @@ function Cart() {
 
                                             </Select>
                                             <Select
-                                                className='my-3 flex-1 ml-2'
+                                                className={` my-3 flex-1  ${!isHiddenAutoCpl ? 'w-full mx-0' : 'mr-0'}`}
                                                 showSearch
                                                 value={wardSelected || "Chọn Phường/Xã"}
                                                 options={optionsSelectWards}
@@ -704,7 +896,7 @@ function Cart() {
                                         </p>
                             }
                         </div>
-                        <div className='flex items-center justify-between'>
+                        <div className={` items-center justify-between ${isHiddenAutoCpl ? 'flex' : ''}`}>
                             <p className='px-5'>
                                 <b className='text-[red]'>(*)</b>
                                 Quý khách hàng vui lòng kiểm tra lại thông

@@ -24,3 +24,30 @@ background-color: #c8191f;
         padding: 10px;
     }
 }
+.ant__tag--warning-pd span{
+margin: auto 0 !important;
+padding: 15px 10px;
+font-size: 20px;
+}
+
+.blur-bottom {
+    position: relative;
+}
+
+.blur-bottom::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px; /* Độ cao của phần mờ mờ */
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+    filter: blur(0px); /* Độ mờ của phần mờ mờ */
+}
+
+
+@media (min-width: 1650px) {
+    .prod-detail-content {
+      width: 1650px;
+    }
+  }

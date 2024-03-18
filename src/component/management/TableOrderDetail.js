@@ -1,6 +1,12 @@
 import { Table } from 'antd';
+import { useContext } from 'react';
+import Context from '../../store/Context';
 
 const TableOrderDetail = ({ columns, dataSource, order }) => {
+    const context = useContext(Context)
+    const isHiddenAutoCpl = context.isHiddenAutoCpl
+    const isScreenSmaller1280 = context.isScreenSmaller1280
+    const isScreenSmaller430 = context.isScreenSmaller430
     return (
         <>
             {/* {console.log(order)} */}
@@ -16,10 +22,11 @@ const TableOrderDetail = ({ columns, dataSource, order }) => {
                     </span>
 
                 </div>
-                <div className='flex justify-between'>
+                <div className='flex justify-between max-[650px]:flex-col'>
                     <span className='pl-5'>Hình thức thanh toán:</span>
-                    <span className='text-[#000] pr-[30px]'>
-                        {order ? order.total ? order.paymentMethods === 'COD' ? 'Thanh toán tiền mặt khi nhận hàng'
+                    <span className='text-[#000] pr-[30px] max-[650px]:pl-[20px]'>
+                        {order ? order.total ? order.paymentMethods === 'COD' ? 'Thanh toán tiền mặt khi nhận hàng' : order.paymentMethods === 'VNPAY' ?
+                            'Thanh toán qua ATM-Tài khoản ngân hàng nội địa (VNPAY)'
                             : 'Thanh toán qua chuyển khoản qua tài khoản ngân hàng' : '' : ''}
                     </span>
                 </div>
