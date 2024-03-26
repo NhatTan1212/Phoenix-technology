@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import Context from '../../store/Context';
 import AppRoutes from '../../AppRoutes';
+import MessengerChat from '../MessengerChat';
 
 function Content() {
     const context = useContext(Context)
@@ -11,6 +12,7 @@ function Content() {
         <div className='page-content bg-[#f0f0f0]' onClick={(e) => { isShowFloatLayer ? setIsShowFloatLayer(false) : setIsShowFloatLayer(false) }}>
             <>
                 <AppRoutes></AppRoutes>
+                <MessengerChat />
             </>
         </div>
     );
