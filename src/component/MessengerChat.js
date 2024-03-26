@@ -5,7 +5,10 @@ export default class MessengerChat extends Component {
     render() {
         return (
             <FacebookProvider appId="924883292758885" chatSupport>
-                <CustomChat pageId="277034358822420" minimized={true} />
+                <CustomChat
+                    pageId="277034358822420"
+                    themeColor="#df1b21"
+                    minimized={true} />
             </FacebookProvider>
         );
     }
